@@ -27,16 +27,25 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             presets: ["es2015", "stage-0"],
-            plugins: [
-              "syntax-jsx",
-              ["transform-react-jsx", {"pragma": "html"}]
-            ]
+            plugins: ["transform-regenerator"]
           }
         }
       }, {
         test: /\.json$/,
         loader: "file-loader"
-      }
+      }, {
+        test: /worker\.js$/,
+        // include: paths.appSrc,
+        use: [
+          { loader: 'worker-loader' },
+          { loader: 'babel-loader',
+            options: {
+              presets: ["es2015", "stage-0"],
+              plugins: ["transform-regenerator"]
+            }
+          }
+        ]
+      },
     ]
   },
 

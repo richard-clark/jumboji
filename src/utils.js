@@ -30,12 +30,12 @@ export function createCanvas(width, height) {
   canvas.height = height;
   canvas.style.width = `${width / 2}px`;
   canvas.style.height = `${height / 2}px`;
-  canvas.style.border = "1px solid red";
+  // canvas.style.border = "1px solid red";
   document.body.appendChild(canvas);
   return canvas;
 }
 
-export function getTextMetrics() {
+function getTextMetrics() {
   const width = 50;
   const height = 50;
   const fontSize = height / 2;
@@ -62,17 +62,15 @@ export function getTextMetrics() {
 }
 
 export function getChar(dataPoint) {
-  let codes = [dataPoint.unified];
-  if (dataPoint.variations.length > 0) {
-    codes = dataPoint.variations[0].split("-");
-  }
-  return codes.map((str) => parseInt(str, 16))
-    .map((code) => String.fromCodePoint(code))
+  return dataPoint.keycode.split(" ")
+    .map((s) => s.split("+")[1])
+    .map((s) => parseInt(s, 16))
+    .map((s) => String.fromCodePoint(s))
     .join("");
 }
 
 // Given a context, returns an array of lab color components for each pixel.
-export function getPixelData(context, width, height) {
+function getPixelData(context, width, height) {
   const imageData = context.getImageData(0, 0, width, height);
   return Array(width * height).fill(0).map((_, index) => {
     const baseIndex = index * 4,
@@ -86,12 +84,14 @@ export function getPixelData(context, width, height) {
     return {
       x: index % width,
       y: Math.floor(index / width),
+      transparent: alphaRatio < 0.1,
+      rgbColor: {r: rFlat, g: gFlat, b: bFlat},
       color: convert.rgb.lab.raw(rFlat, gFlat, bFlat)
     };
   });
 }
 
-export function getAvgColor(context, xOffset, yOffset, char, size=16) {
+function getAvgColor(context, xOffset, yOffset, char, size=16) {
   context.clearRect(0, 0, size, size);
   context.fillText(char, -size * xOffset, size - size * yOffset);
   const pixelData = getPixelData(context, size, size);
@@ -101,10 +101,7 @@ export function getAvgColor(context, xOffset, yOffset, char, size=16) {
   }, [0, 0, 0]).map((v) => v / pixelData.length);
 }
 
-// TODO: detect emojis that are not present
-
-
-export function getColorData(data, metrics) {
+function getColorData(data, metrics) {
   const SIZE = 16;
   const canvas = createCanvas(SIZE, SIZE);
   const context = canvas.getContext("2d");
@@ -112,11 +109,7 @@ export function getColorData(data, metrics) {
   context.font = `${fontSize}px sans-serif`;
   const colorData = data.map((point) => {
     const char = getChar(point);
-    return {
-      color: getAvgColor(context, metrics.xOffset, metrics.yOffset, char, SIZE),
-      name: point.name,
-      char
-    };
+    return getAvgColor(context, metrics.xOffset, metrics.yOffset, char, SIZE);
   });
   canvas.remove();
   return colorData;
@@ -131,4 +124,20 @@ export function getPixelDataForChar(char, metrics, size) {
   const pixelData = getPixelData(context, size, size);
   canvas.remove();
   return pixelData;
+}
+
+export function getData(data) {
+  const metrics = getTextMetrics();
+  const colorData = getColorData(data, metrics);
+
+  const dataMap = data.reduce((map, point, index) => {
+    map[point.num] = {
+      char: getChar(point),
+      color: colorData[index],
+      supported: true // TODO: implement this
+    };
+    return map;
+  }, {});
+
+  return {metrics, data: dataMap};
 }

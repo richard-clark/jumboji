@@ -1,97 +1,130 @@
 import dataUrl from "./data.json";
 import * as utils from "./utils.js";
-import * as tree from "./tree.js";
+import * as most from "most";
+import Worker from "./worker.js";
+import "./main.scss";
 
 function loadData() {
   return fetch(dataUrl).then((response) => response.json());
 }
 
-function renderEmoji({data}, metrics, size) {
-  let width = size;
-  let height = size;
-  const TILE_SIZE = 48;
-  const canvas = utils.createCanvas(TILE_SIZE * width, TILE_SIZE * height);
-  const context = canvas.getContext("2d");
-  const fontSize = Math.round(TILE_SIZE / metrics.actualHeightRatio * 100) / 100;
-  context.font = `${fontSize}px sans-serif`;
-  context.strokeColor = "red";
+const data$ = most.fromPromise(loadData());
 
-  for (let {x, y, item} of data) {
-    context.fillText(item.char, x * TILE_SIZE - TILE_SIZE * metrics.xOffset, y * TILE_SIZE + TILE_SIZE - TILE_SIZE * metrics.yOffset);
-  }
+const documentReady$ = most.fromEvent("DOMContentLoaded", document);
 
-  // for (let x = 0; x < TILES; x++) {
-  //   for (let y = 0; y < TILES; y++) {
-  //     const index = y * TILES + x;
-  //     const point = data[index];
-  //     const char = getChar(point);
-  //     context.fillText(char, x * TILE_SIZE - TILE_SIZE * metrics.xOffset, y * TILE_SIZE + TILE_SIZE - TILE_SIZE * metrics.yOffset);
-  //     // context.strokeRect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-  //
-  //     // 😒
-  //
-  //   }
-  // }
-
-
+function getApperanceData(data) {
+  return utils.getData(data);
 }
 
+const apperanceData$ = most.combine(getApperanceData, data$, documentReady$);
+
+function getRandomEmoji(data) {
+  const point = data[rand(data.length)];
+  return utils.getChar(point);
+}
+
+const randomize$ = most.fromEvent("click", document)
+  .filter((event) => event.target.classList.contains("randomize"));
+
+const dataToRender$ = most.combine(getRandomEmoji, data$, randomize$)
+  .startWith("🌈")
+  .map((char) => ({
+    char,
+    imageSize: 64,
+    tileSize: 24,
+    maxVariation: 0.9
+  }));
 
 function rand(exclusiveMax) {
   return Math.floor(Math.random() * exclusiveMax);
 }
 
+const worker = new Worker();
+const outputData$ = most.fromEvent("message", worker)
+  .map((message) => message.data);
 
-function getEmojiForPixelData(emojiData, pixelData, maxVariation=0.9) {
-  const pixelDataTree = tree.tree(emojiData, "color");
+outputData$.observe((event) => console.log("Loading", event.loading));
 
-  const emojiPixelData = pixelData.map((data) => {
-    const neighbors = tree.nNearestNeighbors(pixelDataTree, data.color, "color", 10);
-    while (neighbors.length > 1 && neighbors[neighbors.length - 1].distance > neighbors[0].distance * (1 + maxVariation)) {
-      neighbors.pop();
-    }
-    return {
-      x: data.x,
-      y: data.y,
-      item: neighbors[rand(neighbors.length)].node
-    };
-  });
+const workerData$ = most.combine(generateDataToRender, apperanceData$, dataToRender$);
+workerData$.observe((event) => worker.postMessage(event));
 
+function generateDataToRender(apperanceData, config) {
+  const pixelData = utils.getPixelDataForChar(
+    config.char,
+    apperanceData.metrics,
+    config.imageSize
+  );
   return {
-    data: emojiPixelData,
-    width: pixelData.width,
-    height: pixelData.height
+    emojiData: Object.values(apperanceData.data),
+    pixelData,
+    maxVariation: config.maxVariation
   };
 }
 
-// TODO: detect emojis that are not present
+let emojiImage = null;
 
-function render(data) {
-  console.log(`loaded ${data.length} data points`);
-  // console.log(data[166]);
-  // console.log(data[167]);
+function renderEmoji(data, metrics, {tileSize, imageSize}) {
+  let padding = 5;
+  let width = tileSize * imageSize + (imageSize - 1) * padding;
+  let height = tileSize * imageSize + (imageSize - 1) * padding;
+  const TILE_SIZE = tileSize;
+  if (emojiImage) { emojiImage.remove(); }
+  const emojiCanvas = utils.createCanvas(width, height);
+  const context = emojiCanvas.getContext("2d");
+  const fontSize = Math.round(TILE_SIZE / metrics.actualHeightRatio * 100) / 100;
+  context.font = `${fontSize}px sans-serif`;
+  context.strokeColor = "red";
 
+  for (let {x, y, item} of data) {
+    context.fillText(item.char, x * TILE_SIZE + x * padding - TILE_SIZE * metrics.xOffset, y * TILE_SIZE + TILE_SIZE + y * padding - TILE_SIZE * metrics.yOffset);
+  }
 
-  const metrics = utils.getTextMetrics();
-
-  const colorData = utils.getColorData(data, metrics);
-  console.log("got color data");
-  const pixelData = utils.getPixelDataForChar("👓️", metrics, 32);
-  console.log("got pixel data");
-  const emojiForPixelData = getEmojiForPixelData(colorData, pixelData);
-  console.log("got emoji");
-  renderEmoji(emojiForPixelData, metrics, 32);
-  console.log("rendered");
-
-  // console.log(colorData);
-
-
-
-
-  // doSomething(data, metrics);
-
+  const image = emojiCanvas.toDataURL("image/png");
+  emojiCanvas.remove();
+  emojiImage = document.createElement("img");
+  emojiImage.classList.add("img-container__img");
+  emojiImage.src = image;
+  document.querySelector(".img-container").appendChild(emojiImage);
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  loadData().then(render);
-})
+most.combine(
+  ({data}, {metrics}, config) => ({data, metrics, config}),
+  outputData$.filter(({data}) => data),
+  apperanceData$,
+  dataToRender$
+).observe(({data, metrics, config}) => renderEmoji(data, metrics, config));
+
+documentReady$.observe(() => {
+  const main = document.createElement("main");
+  main.classList.add("main");
+  main.innerHTML = `
+    <nav class="main__nav"></nav>
+    <div class="main__content img-container">
+
+    </div>
+  `;
+  document.body.appendChild(main);
+
+  const nav = main.querySelector(".main__nav");
+  const button = document.createElement("button");
+  button.classList.add("randomize");
+  button.textContent = "I'm feeling lucky";
+  nav.appendChild(button);
+
+});
+
+document.addEventListener("click", (event) => {
+  let target = event.target;
+  if (target.classList.contains("img-container__img")) {
+    target = target.parentElement;
+  }
+
+  if (target.classList.contains("img-container")) {
+    if (target.classList.contains("img-container--full-size")) {
+      target.classList.remove("img-container--full-size");
+    } else {
+      target.classList.add("img-container--full-size");
+    }
+  }
+
+});
