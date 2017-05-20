@@ -3,6 +3,12 @@ import * as utils from "./utils.js";
 import * as most from "most";
 import Worker from "./worker.js";
 import "./main.scss";
+import convert from "color-convert";
+
+const link = document.createElement("link")
+link.href = "https://fonts.googleapis.com/icon?family=Material+Icons";
+link.rel = "stylesheet";
+document.head.appendChild(link);
 
 function loadData() {
   return fetch(dataUrl).then((response) => response.json());
@@ -24,7 +30,8 @@ function getRandomEmoji(data) {
 }
 
 const randomize$ = most.fromEvent("click", document)
-  .filter((event) => event.target.classList.contains("randomize"));
+  .filter((event) => event.target.classList.contains("randomize")
+    || event.target.parentElement.classList.contains("randomize"));
 
 const dataToRender$ = most.combine(getRandomEmoji, data$, randomize$)
   .startWith("🌈")
@@ -43,7 +50,13 @@ const worker = new Worker();
 const outputData$ = most.fromEvent("message", worker)
   .map((message) => message.data);
 
-outputData$.observe((event) => console.log("Loading", event.loading));
+outputData$.observe((event) => {
+  if (event.loading) {
+    document.querySelector(".main").classList.add("main--loading");
+  } else {
+    document.querySelector(".main").classList.remove("main--loading");
+  }
+});
 
 const workerData$ = most.combine(generateDataToRender, apperanceData$, dataToRender$);
 workerData$.observe((event) => worker.postMessage(event));
@@ -55,7 +68,7 @@ function generateDataToRender(apperanceData, config) {
     config.imageSize
   );
   return {
-    emojiData: Object.values(apperanceData.data),
+    apperanceData,
     pixelData,
     maxVariation: config.maxVariation
   };
@@ -63,7 +76,20 @@ function generateDataToRender(apperanceData, config) {
 
 let emojiImage = null;
 
-function renderEmoji(data, metrics, {tileSize, imageSize}) {
+function renderEmoji(data, palette, metrics, {tileSize, imageSize}) {
+  const color = palette[0];
+  document.querySelector(".main__nav")
+    .style.backgroundColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
+  const hslColor = convert.rgb.hsl(color);
+  let fgColor = "#eee";
+  if (hslColor[2] > 50) {
+    fgColor = "#111";
+  }
+  document.querySelector(".main__nav")
+    .style.color = fgColor;
+
+
+
   let padding = 5;
   let width = tileSize * imageSize + (imageSize - 1) * padding;
   let height = tileSize * imageSize + (imageSize - 1) * padding;
@@ -88,27 +114,43 @@ function renderEmoji(data, metrics, {tileSize, imageSize}) {
 }
 
 most.combine(
-  ({data}, {metrics}, config) => ({data, metrics, config}),
+  ({data, palette}, {metrics}, config) => ({data, palette, metrics, config}),
   outputData$.filter(({data}) => data),
   apperanceData$,
   dataToRender$
-).observe(({data, metrics, config}) => renderEmoji(data, metrics, config));
+).observe(({data, palette, metrics, config}) => renderEmoji(data, palette, metrics, config));
 
 documentReady$.observe(() => {
   const main = document.createElement("main");
   main.classList.add("main");
   main.innerHTML = `
-    <nav class="main__nav"></nav>
+    <nav class="main__nav">
+      <h3>Hello World!</h3>
+    </nav>
     <div class="main__content img-container">
 
+    </div>
+    <div class="main__loader">
+      <div class="sk-cube-grid">
+        <div class="sk-cube sk-cube1"></div>
+        <div class="sk-cube sk-cube2"></div>
+        <div class="sk-cube sk-cube3"></div>
+        <div class="sk-cube sk-cube4"></div>
+        <div class="sk-cube sk-cube5"></div>
+        <div class="sk-cube sk-cube6"></div>
+        <div class="sk-cube sk-cube7"></div>
+        <div class="sk-cube sk-cube8"></div>
+        <div class="sk-cube sk-cube9"></div>
+      </div>
     </div>
   `;
   document.body.appendChild(main);
 
   const nav = main.querySelector(".main__nav");
   const button = document.createElement("button");
+  button.classList.add("icon-btn");
   button.classList.add("randomize");
-  button.textContent = "I'm feeling lucky";
+  button.innerHTML = '<i class="material-icons">refresh</i>'
   nav.appendChild(button);
 
 });
@@ -126,5 +168,4 @@ document.addEventListener("click", (event) => {
       target.classList.add("img-container--full-size");
     }
   }
-
 });

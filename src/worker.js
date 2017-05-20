@@ -1,10 +1,9 @@
 import * as tree from "./tree.js";
 import * as most from "most";
 import regeneratorRuntime from "regenerator-runtime";
+import quantize from "quantize";
 
-function* getEmojiForPixelData(emojiData, pixelData, maxVariation=0.9) {
-  yield { loading: true };
-
+function getEmojiForPixelData(emojiData, pixelData, maxVariation=0.9) {
   const pixelDataTree = tree.tree(emojiData, "color");
 
   const emojiPixelData = pixelData.map((data) => {
@@ -19,10 +18,29 @@ function* getEmojiForPixelData(emojiData, pixelData, maxVariation=0.9) {
     };
   });
 
+  return emojiPixelData;
+}
+
+function getColorPalette(data) {
+  const opaquePixels = data.filter(({transparent}) => !transparent)
+    .map(({rgbColor}) => [rgbColor.r, rgbColor.g, rgbColor.b]);
+  const colorMap = quantize(opaquePixels, 4);
+  return colorMap.palette();
+}
+
+function* process(apperanceData, pixelData, maxVariation=0.9) {
+
+  yield { loading: true };
+
+  const emojiData = Object.values(apperanceData.data);
+  const data = getEmojiForPixelData(emojiData, pixelData, maxVariation);
+  const palette = getColorPalette(pixelData);
+
   yield {
-    data: emojiPixelData,
-    loading: false
-  }
+    loading: false,
+    palette,
+    data
+  };
 }
 
 function rand(exclusiveMax) {
@@ -32,8 +50,8 @@ function rand(exclusiveMax) {
 const message$ = most.fromEvent("message", self);
 
 message$.concatMap(({data}) => {
-  const {emojiData, pixelData, maxVariation} = data;
-  const s$ = getEmojiForPixelData(emojiData, pixelData, maxVariation);
+  const {apperanceData, pixelData, maxVariation} = data;
+  const s$ = process(apperanceData, pixelData, maxVariation);
   return most.from(s$);
 })
 .observe((event) => self.postMessage(event));
