@@ -9,6 +9,7 @@ $gray--light: #eee;
   display: flex;
   flex-direction: column;
   max-height: 100vh;
+  min-height: 100vh;
 
   .main__nav {
     align-items: center;
@@ -17,6 +18,13 @@ $gray--light: #eee;
     max-height: $nav-height;
     min-height: $nav-height;
     transition: background-color 0.5s ease-in-out;
+
+    &.main__nav--fg-light {
+      color: #eee;
+    }
+    &.main__nav--fg-dark {
+      color: #111;
+    }
   }
 
   .main__content {
@@ -33,10 +41,8 @@ $gray--light: #eee;
     position: absolute;
     top: 0;
     width: 100%;
-  }
 
-  &.main--loading {
-    .main__loader {
+    &.main__loader--loading {
       visibility: visible;
     }
   }

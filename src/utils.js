@@ -141,3 +141,7 @@ export function getData(data) {
 
   return {metrics, data: dataMap};
 }
+
+export function rand(exclusiveMax) {
+  return Math.floor(Math.random() * exclusiveMax);
+}

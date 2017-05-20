@@ -25,6 +25,10 @@ function getColorPalette(data) {
   const opaquePixels = data.filter(({transparent}) => !transparent)
     .map(({rgbColor}) => [rgbColor.r, rgbColor.g, rgbColor.b]);
   const colorMap = quantize(opaquePixels, 4);
+  const palette = colorMap.palette();
+  const dominantColor = palette[0];
+
+
   return colorMap.palette();
 }
 
