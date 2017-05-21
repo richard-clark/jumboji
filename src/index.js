@@ -57,12 +57,8 @@ const dataToRender$ = workerClient$
   .scan((previous, current) => ({
     data: current.data,
     palette: current.palette || previous.palette
-  }), {
-    palette: [[255, 255, 255]]
-  })
-  .startWith({
-    palette: [[255, 255, 255]]
-  })
+  }), {})
+  .startWith({})
   .multicast();
 
 let image$ = Image$({dataToRender$, appearanceData$, config$})

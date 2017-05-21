@@ -55,6 +55,7 @@ function colorToRGBString(color) {
 
 function getNavStyle(palette) {
   // dominantColor
+  palette = palette || [[255, 255, 255]];
   const backgroundColor = palette[0];
   const bgColorInHSL = convert.rgb.hsl(backgroundColor);
   const useDarkTheme = bgColorInHSL[2] > 50;
@@ -68,16 +69,43 @@ function getNavStyle(palette) {
   };
 }
 
-function view({palette}, config, initialLoading, image, emojiInputInvalid) {
+
+function ImageBlob$({image$}) {
+
+  return image$
+    .skipRepeats()
+    .map((image) => {
+      if (image) {
+        console.log("genearting blob");
+        // http://stackoverflow.com/a/16245768
+        const splitIndex = image.indexOf(",");
+        const binaryData = atob(image.slice(splitIndex+1))
+          .split("")
+          .map((s) => s.charCodeAt(0));
+        const byteArray = new Uint8Array(binaryData);
+        // http://stackoverflow.com/a/23956661
+        const blob = new Blob([byteArray], {type: "image/png"});
+        return blob;
+      } else {
+        return image;
+      }
+    });
+
+}
+
+function view({palette}, config, initialLoading, imageBlob, emojiInputInvalid) {
 
   const navStyle = getNavStyle(palette);
   const style = `background-color:${navStyle.backgroundColor}`;
 
   let downloadButtonProps = {style: "cursor:not-allowed"};
-  if (image) {
+  if (imageBlob) {
+    // http://stackoverflow.com/a/23956661
+    const url = URL.createObjectURL(imageBlob);
+
     downloadButtonProps = {
       download: "emoji.png",
-      href: image,
+      href: url,
       style: ""
     };
   }
@@ -198,12 +226,14 @@ export default function Nav({
   emojiInputInvalid$
 }) {
 
+  const imageBlob$ = ImageBlob$({image$});
+
   const dom$ = most.combine(
     view,
     dataToRender$,
     config$,
     initialLoading$,
-    image$,
+    imageBlob$,
     emojiInputInvalid$
   );
 
