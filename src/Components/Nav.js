@@ -82,6 +82,10 @@ function view({palette}, config, initialLoading, image) {
         // SimpleButton("tileSize:medium", {action: "set-tile-size", size: 32}),
         // SimpleButton("tileSize:large", {action: "set-tile-size", size: 64}),
         h("div.nav__group", {}, [
+          IconButton("panorama_fish_eye", {action: "set-background", background: null}, !config.background),
+          IconButton("lens", {action: "set-background", background: "#ffffff"}, config.background === "#ffffff"),
+        ]),
+        h("div.nav__group", {}, [
           IconButton("grid_off", {action: "set-padding", padding: false}, !config.padding),
           IconButton("grid_on", {action: "set-padding", padding: true}, config.padding),
         ]),

@@ -7,11 +7,14 @@ const INITIAL_CONFIG = {
   imageSize: 24,
   tileSize: 32,
   maxVariation: 0.9,
-  padding: true
+  padding: true,
+  background: null
 };
 
 function actionReducer(state, event) {
   switch (event.action) {
+    case "set-background":
+      return {...state, background: event.background};
     case "set-emoji":
       return {...state, emoji: event.emoji}
     case "set-image-size":
@@ -21,7 +24,7 @@ function actionReducer(state, event) {
     case "toggle-full-size":
       return {...state, fullSize: !state.fullSize};
     case "set-padding":
-      return {...state, padding: event.padding};
+      return {...state, padding: Boolean(event.padding)};
     default:
       return state;
   }

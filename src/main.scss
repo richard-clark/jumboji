@@ -6,11 +6,28 @@ $main-vertical-padding: 10px;
 
 $gray--light: #eee;
 
+body {
+  overflow: hidden;
+}
+
 .main {
   display: flex;
   flex-direction: column;
   max-height: 100vh;
   min-height: 100vh;
+
+  &:before {
+    background-image: url("./transparency-indicator.svg");
+    background-size: 80px;
+    content: "";
+    display: block;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    z-index: -1;
+  }
 
   .main__nav {
     box-shadow: 0 2px 4px $gray--light;
@@ -40,6 +57,7 @@ $gray--light: #eee;
 
 .img-container {
   cursor: -webkit-zoom-in;
+  position: relative;
 
   .img-container__img {
     display: block;
@@ -66,10 +84,13 @@ $gray--light: #eee;
   border: none;
   color: inherit;
   cursor: pointer;
+  margin-bottom: 3px;
+  margin-top: 3px;
   padding: 3px 5px;
 
   &.icon-btn--selected {
     border-bottom: 3px solid #111;
+    margin-bottom: 0;
   }
 }
 
@@ -94,7 +115,6 @@ $gray--light: #eee;
   }
   width: 33%;
   height: 33%;
-  // background-color: #333;
   float: left;
   position: relative;
   -webkit-animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;

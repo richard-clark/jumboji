@@ -31,7 +31,7 @@ module.exports = {
           }
         }
       }, {
-        test: /\.json$/,
+        test: /\.(json|svg)$/,
         loader: "file-loader"
       }, {
         test: /worker\.js$/,

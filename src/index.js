@@ -18,12 +18,12 @@ const data$ = Data$({});
 const documentReady$ = DocumentReady$();
 const clickWithDataTarget$ = ClickWithDataTarget$();
 
-const apperanceData$ = most.combine(utils.getData, data$, documentReady$);
+const appearanceData$ = most.combine(utils.getData, data$, documentReady$);
 
 const config$ = Config$({data$, clickWithDataTarget$});
 
 const workerClient$ = WorkerClient$({
-  apperanceData$,
+  appearanceData$,
   config$
 });
 
@@ -39,12 +39,12 @@ const dataToRender$ = workerClient$
   })
   .multicast();
 
-let image$ = Image$({dataToRender$, apperanceData$, config$})
+let image$ = Image$({dataToRender$, appearanceData$, config$})
   .startWith(null);
 
 let img = Img({image$, config$});
 
-const initialLoading$ = apperanceData$
+const initialLoading$ = appearanceData$
   .map(() => false)
   .startWith(true);
 const workerLoading$ = workerClient$

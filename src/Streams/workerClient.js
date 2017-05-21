@@ -3,37 +3,37 @@ import dataUrl from "../data.json";
 import Worker from "../worker.js";
 import * as utils from "../utils.js";
 
-function generateDataToRender(apperanceData, config) {
+function generateDataToRender(appearanceData, config) {
   const pixelData = utils.getPixelDataForChar(
     config.emoji,
-    apperanceData.metrics,
+    appearanceData.metrics,
     config.imageSize
   );
   return {
-    apperanceData,
+    appearanceData,
     pixelData,
     maxVariation: config.maxVariation
   };
 }
 
 function eventsAreEqual(a, b) {
-  const areEqual = a.apperanceData.metrics === b.apperanceData.metrics
+  const areEqual = a.appearanceData.metrics === b.appearanceData.metrics
     && a.config.emoji === b.config.emoji
     && a.config.imageSize === b.config.imageSize;
   console.log("events are equal", areEqual);
   return areEqual;
 }
 
-export default function WorkerClient$({apperanceData$, config$}) {
+export default function WorkerClient$({appearanceData$, config$}) {
 
   const worker = new Worker();
 
   const workerData$ = most.combine(
-    ((apperanceData, config) => ({apperanceData, config})),
-    apperanceData$,
+    ((appearanceData, config) => ({appearanceData, config})),
+    appearanceData$,
     config$
   ).skipRepeatsWith(eventsAreEqual)
-  .map(({apperanceData, config}) => generateDataToRender(apperanceData, config))
+  .map(({appearanceData, config}) => generateDataToRender(appearanceData, config))
   workerData$.observe((event) => worker.postMessage(event));
 
   return most.fromEvent("message", worker)

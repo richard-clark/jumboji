@@ -32,11 +32,11 @@ function getColorPalette(data) {
   return colorMap.palette();
 }
 
-function* process(apperanceData, pixelData, maxVariation=0.9) {
+function* process(appearanceData, pixelData, maxVariation=0.9) {
 
   yield { loading: true };
 
-  const emojiData = Object.values(apperanceData.data);
+  const emojiData = Object.values(appearanceData.data);
   const data = getEmojiForPixelData(emojiData, pixelData, maxVariation);
   const palette = getColorPalette(pixelData);
 
@@ -54,8 +54,8 @@ function rand(exclusiveMax) {
 const message$ = most.fromEvent("message", self);
 
 message$.concatMap(({data}) => {
-  const {apperanceData, pixelData, maxVariation} = data;
-  const s$ = process(apperanceData, pixelData, maxVariation);
+  const {appearanceData, pixelData, maxVariation} = data;
+  const s$ = process(appearanceData, pixelData, maxVariation);
   return most.from(s$);
 })
 .observe((event) => self.postMessage(event));
