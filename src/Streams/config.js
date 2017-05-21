@@ -20,8 +20,8 @@ function actionReducer(state, event) {
       return {...state, tileSize: parseInt(event.size)};
     case "toggle-full-size":
       return {...state, fullSize: !state.fullSize};
-    case "toggle-padding":
-      return {...state, padding: !state.padding};
+    case "set-padding":
+      return {...state, padding: event.padding};
     default:
       return state;
   }

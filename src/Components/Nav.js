@@ -49,7 +49,7 @@ function view({palette}, config, initialLoading, image) {
     downloadButtonProps = {
       download: "emoji.png",
       href: image,
-      style: {}
+      style: ""
     };
   }
 
@@ -82,8 +82,8 @@ function view({palette}, config, initialLoading, image) {
         // SimpleButton("tileSize:medium", {action: "set-tile-size", size: 32}),
         // SimpleButton("tileSize:large", {action: "set-tile-size", size: 64}),
         h("div.nav__group", {}, [
-          IconButton("grid_off", {action: "toggle-padding"}, !config.padding),
-          IconButton("grid_on", {action: "toggle-padding"}, config.padding),
+          IconButton("grid_off", {action: "set-padding", padding: false}, !config.padding),
+          IconButton("grid_on", {action: "set-padding", padding: true}, config.padding),
         ]),
         h(`a.nav__btn.icon-btn`,
           {props: downloadButtonProps},

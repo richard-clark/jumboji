@@ -4,6 +4,7 @@ import * as utils from "./utils.js";
 import Config$ from "./Streams/config.js";
 import Data$ from "./Streams/data.js";
 import Image$ from "./Streams/image.js";
+import Router$ from "./Streams/router.js";
 import WorkerClient$ from "./Streams/workerClient.js";
 import {DocumentReady$, ClickWithDataTarget$} from "./Streams/dom.js";
 import Img from "./Components/Img.js";
@@ -70,3 +71,6 @@ function main(navVnode, imgVnode, loaderVnode) {
 let dom$ = most.combine(main, nav.dom$, img.dom$, loader.dom$);
 
 domSink({dom$, documentReady$});
+
+const router$ = Router$({});
+router$.observe((location) => console.log("router", location));
