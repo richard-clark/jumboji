@@ -4,7 +4,7 @@ import * as most from "most";
 const INITIAL_CONFIG = {
   emoji: "🌈",
   fullSize: false,
-  imageSize: 32,
+  imageSize: 24,
   tileSize: 32,
   maxVariation: 0.9,
   padding: true

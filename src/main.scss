@@ -13,12 +13,9 @@ $gray--light: #eee;
   min-height: 100vh;
 
   .main__nav {
-    align-items: center;
-    display: flex;
     box-shadow: 0 2px 4px $gray--light;
     max-height: $nav-height;
     min-height: $nav-height;
-    transition: background-color 0.5s ease-in-out;
   }
 
   .main__content {
@@ -152,7 +149,16 @@ $gray--light: #eee;
 }
 
 .nav {
-  transition: color 0.5s ease-in-out;
+  align-items: center;
+  display: flex;
+  transition: background-color 0.5s ease-in-out,
+    color 0.5s ease-in-out,
+    transform 0.5s ease-in-out 0.5s;
+  transform: translateY(-100%);
+
+  &.nav--visible {
+    transform: none;
+  }
 
   .nav__btn {
     transition: border-color 0.5s ease-in-out;

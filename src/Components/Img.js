@@ -11,6 +11,7 @@ function render(imageSrc, config) {
   let img = "";
   if (imageSrc) {
     img = h("img.img-container__img", {
+      key: "img-inner",
       props: {
         src: imageSrc
       }
@@ -18,7 +19,7 @@ function render(imageSrc, config) {
   }
 
   let vnode = h(`div${cls}`,
-    {dataset: {action: "toggle-full-size"}},
+    {dataset: {action: "toggle-full-size"}, key: "img"},
     img
   );
 

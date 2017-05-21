@@ -5,6 +5,7 @@ import Config$ from "./Streams/config.js";
 import Data$ from "./Streams/data.js";
 import Image$ from "./Streams/image.js";
 import WorkerClient$ from "./Streams/workerClient.js";
+import {DocumentReady$, ClickWithDataTarget$} from "./Streams/dom.js";
 import Img from "./Components/Img.js";
 import Loader from "./Components/Loader.js";
 import Nav from "./Components/Nav.js";
@@ -13,15 +14,10 @@ import domSink from "./domSink.js";
 
 const data$ = Data$({});
 
-const documentReady$ = most.fromEvent("DOMContentLoaded", document);
+const documentReady$ = DocumentReady$();
+const clickWithDataTarget$ = ClickWithDataTarget$();
 
 const apperanceData$ = most.combine(utils.getData, data$, documentReady$);
-
-const clickWithDataTarget$ = most.fromEvent("click", document)
-  .map(getDataTarget)
-  .filter((target) => target)
-  .tap(() => console.log("click"))
-  .multicast();
 
 const config$ = Config$({data$, clickWithDataTarget$});
 
@@ -31,7 +27,6 @@ const workerClient$ = WorkerClient$({
 });
 
 const dataToRender$ = workerClient$
-  .tap((data) => console.log("dtr", data))
   .scan((previous, current) => ({
     data: current.data,
     palette: current.palette || previous.palette
@@ -42,7 +37,6 @@ const dataToRender$ = workerClient$
     palette: [[255, 255, 255]]
   })
   .multicast();
-let nav = Nav({dataToRender$, config$});
 
 let image$ = Image$({dataToRender$, apperanceData$, config$})
   .startWith(null);
@@ -60,10 +54,13 @@ const loading$ = most.combine(
   initialLoading$,
   workerLoading$
 );
+
+let nav = Nav({dataToRender$, config$, initialLoading$, image$});
+
 let loader = Loader({ loading$ });
 
 function main(navVnode, imgVnode, loaderVnode) {
-  return h("main.main", {}, [
+  return h("main.main", {key: "main"}, [
     navVnode,
     imgVnode,
     loaderVnode
@@ -73,15 +70,3 @@ function main(navVnode, imgVnode, loaderVnode) {
 let dom$ = most.combine(main, nav.dom$, img.dom$, loader.dom$);
 
 domSink({dom$, documentReady$});
-
-function getDataTarget(event) {
-  // debugger
-  console.log("get data target", event);
-  let element = event.target;
-  while (element) {
-    if (Object.keys(element.dataset).length > 0) {
-      return element.dataset;
-    }
-    element = element.parentElement;
-  }
-}

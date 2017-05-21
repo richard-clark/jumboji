@@ -7,9 +7,9 @@ export default function Loader({loading$}) {
     if (!loading) { return ""; }
 
     const elements = Array(9).fill(0).map((_, index) => index + 1)
-      .map((index) => h(`div.sk-cube.sk-cube${index}`, {}));
+      .map((index) => h(`div.sk-cube.sk-cube${index}`, {key: `loader-${index}`}));
 
-    return h("div.main__loader.main__loader--loading", {},
+    return h("div.main__loader.main__loader--loading", {key: "loader"},
       h("div.sk-cube-grid", {},
         elements
       )
