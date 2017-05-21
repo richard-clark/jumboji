@@ -38,34 +38,7 @@ function getRandomEmoji(data) {
   };
 }
 
-function EmojiChar$(data$) {
-  return data$.map((data) => {
-    const chars = data.map(utils.getChar);
-    return new Set(chars);
-  }).multicast();
-}
-
-function handleEmojiInputSubmit(validChars) {
-  if (!validChars) {
-    return { loading: true };
-  }
-
-  const char = document.querySelector(".emoji-input").value;
-
-  return {
-    loading: false,
-    valid: validChars.has(char),
-    char
-  };
-}
-
-function EmojiInput$({clickWithDataTarget$, emojiChar$}) {
-  return clickWithDataTarget$
-    .filter(({trigger}) => trigger === "emoji-input-submit")
-    .sample(handleEmojiInputSubmit, emojiChar$);
-}
-
-export default function Config$({data$, clickWithDataTarget$}) {
+export default function Config$({data$, clickWithDataTarget$, emojiInput$}) {
 
   const clickAction$ = clickWithDataTarget$
     .filter(({action}) => action)
@@ -77,11 +50,6 @@ export default function Config$({data$, clickWithDataTarget$}) {
     clickWithDataTarget$
       .filter(({trigger}) => trigger === "randomize")
   ).tap(() => console.log("randomize action"));
-
-
-  const emojiChar$ = EmojiChar$(data$);
-
-  const emojiInput$ = EmojiInput$({clickWithDataTarget$, emojiChar$});
 
   const emojiInputAction$ = emojiInput$
     .filter((action) => action.valid)

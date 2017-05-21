@@ -72,7 +72,7 @@ function getNavStyle(palette) {
   };
 }
 
-function view({palette}, config, initialLoading, image) {
+function view({palette}, config, initialLoading, image, emojiInputInvalid) {
 
   const navStyle = getNavStyle(palette);
   const style = `background-color:${navStyle.backgroundColor}`;
@@ -100,6 +100,11 @@ function view({palette}, config, initialLoading, image) {
           on: {submit(event) { console.log("submit"); event.preventDefault(); } }
         }, [
           h("input.nav__input.emoji-input", {
+            class: {
+              nav__input: true,
+              "emoji-input": true,
+              "emoji-input--invalid": emojiInputInvalid
+            },
             on: {focus(event) { event.target.select(); }},
             props: {
               style: `background-color:${navStyle.inputBackgroundColor}`,
@@ -186,9 +191,22 @@ function view({palette}, config, initialLoading, image) {
 
 }
 
-export default function Nav({dataToRender$, config$, initialLoading$, image$}) {
+export default function Nav({
+  dataToRender$,
+  config$,
+  initialLoading$,
+  image$,
+  emojiInputInvalid$
+}) {
 
-  const dom$ = most.combine(view, dataToRender$, config$, initialLoading$, image$);
+  const dom$ = most.combine(
+    view,
+    dataToRender$,
+    config$,
+    initialLoading$,
+    image$,
+    emojiInputInvalid$
+  );
 
   return {dom$};
 

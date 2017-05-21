@@ -7,6 +7,7 @@ import Image$ from "./Streams/image.js";
 import Router$ from "./Streams/router.js";
 import WorkerClient$ from "./Streams/workerClient.js";
 import {DocumentReady$, ClickWithDataTarget$} from "./Streams/dom.js";
+import {EmojiInput$, EmojiInputInvalid$} from "./Streams/emojiInput.js";
 import Img from "./Components/Img.js";
 import Loader from "./Components/Loader.js";
 import Nav from "./Components/Nav.js";
@@ -20,7 +21,9 @@ const clickWithDataTarget$ = ClickWithDataTarget$();
 
 const appearanceData$ = most.combine(utils.getData, data$, documentReady$);
 
-const config$ = Config$({data$, clickWithDataTarget$});
+const emojiInput$ = EmojiInput$({clickWithDataTarget$, data$});
+
+const config$ = Config$({data$, clickWithDataTarget$, emojiInput$});
 
 const workerClient$ = WorkerClient$({
   appearanceData$,
@@ -56,7 +59,15 @@ const loading$ = most.combine(
   workerLoading$
 );
 
-let nav = Nav({dataToRender$, config$, initialLoading$, image$});
+let emojiInputInvalid$ = EmojiInputInvalid$({emojiInput$});
+
+let nav = Nav({
+  dataToRender$,
+  config$,
+  initialLoading$,
+  image$,
+  emojiInputInvalid$
+});
 
 let loader = Loader({ loading$ });
 
