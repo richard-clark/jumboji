@@ -56,6 +56,7 @@ export default function Config$({data$, clickWithDataTarget$, emojiInput$, state
 
   const _searchAction$ = clickWithDataTarget$
     .filter(({trigger}) => trigger === "search-result")
+    .filter((action) => action.emoji)
     .map((action) => ({action: "set-emoji", emoji: action.emoji}));
 
   const config$ = most.merge(stateAction$, clickAction$, randomizeAction$, emojiInputAction$, _searchAction$)

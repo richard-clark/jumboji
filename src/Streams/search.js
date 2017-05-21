@@ -44,7 +44,10 @@ export function SearchParams$({clickWithDataTarget$, searchAction$}) {
     .filter(({trigger}) => trigger === "show-serch-modal")
     .map(() => ({show: true, query: ""}));
 
-  const searchClose$ = searchAction$
+  const escButton$ = most.fromEvent("keyup", document)
+    .filter((event) => event.keyCode === 27);
+
+  const searchClose$ = most.merge(searchAction$, escButton$)
     .map(() => ({show: false}));
 
   const INITIAL_SEARCH_PARAMS = {
