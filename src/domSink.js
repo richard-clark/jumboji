@@ -1,11 +1,13 @@
 import * as snabbdom from "snabbdom";
 import * as most from "most";
+import cls from "snabbdom/modules/class";
 import dataset from "snabbdom/modules/dataset";
 import props from "snabbdom/modules/props";
 import eventlisteners from "snabbdom/modules/eventlisteners";
 
 export default function domSink({documentReady$, dom$}) {
   const patch = snabbdom.init([
+    cls,
     dataset,
     props,
     eventlisteners

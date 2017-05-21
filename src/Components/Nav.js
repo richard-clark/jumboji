@@ -2,15 +2,51 @@ import {h} from "snabbdom/h";
 import * as most from "most";
 import convert from "color-convert";
 
-function IconButton(icon, data, selected) {
-  return h(`button.nav__btn.icon-btn${selected ? '.icon-btn--selected' : ''}`,
-    {dataset: data},
-    h("i.material-icons", {}, icon)
-  );
+function TooltipContainer({tooltip, tooltipAlignRight, trigger}) {
+
+  trigger.data.class["tooltip-container__trigger"] = true;
+
+  return h(`div.tooltip-container`, {}, [
+    trigger,
+    h("div", {
+      class: {
+        "tooltip-container__tooltip": true,
+        "tooltip-container__tooltip--align-right": tooltipAlignRight
+      }
+    }, tooltip)
+  ]);
+
 }
 
-function SimpleButton(text, dataset) {
-  return h("button", {dataset}, text);
+
+function IconButton(config) {
+
+  const {icon, sel, cls, selected, data, props, tooltip} = config;
+
+  const BASE_CLASS = {
+    nav__btn: true,
+    "icon-btn": true,
+    "icon-btn--selected": selected || false
+  };
+
+  const vnode = {
+    sel: sel || "button",
+    data: {
+      class: {...BASE_CLASS, ...(cls || {})},
+      props: props || {},
+      dataset: data
+    },
+    children: [
+      h("i.material-icons", {}, icon)
+    ]
+  }
+
+  if (tooltip) {
+    return TooltipContainer({...config, trigger: vnode});
+  } else {
+    return vnode;
+  }
+
 }
 
 function colorToRGBString(color) {
@@ -69,30 +105,79 @@ function view({palette}, config, initialLoading, image) {
               value: config.emoji
             }
           }),
-          IconButton("check", {trigger: "emoji-input-submit"})
+          IconButton({
+            icon: "check",
+            data: {trigger: "emoji-input-submit"},
+            tooltip: "Submit",
+            tooltipAlignRight: true
+          })
         ]),
-        IconButton("refresh", {trigger: "randomize"}),
-        IconButton("search", {trigger: "show-serch-modal"}),
+        IconButton({
+          icon: "refresh",
+          data: {trigger: "randomize"},
+          tooltip: "Random emoji 🍀",
+          tooltipAlignRight: true
+        }),
+        IconButton({
+          icon: "search",
+          data: {trigger: "show-serch-modal"},
+          tooltip: "Search...",
+          tooltipAlignRight: true
+        }),
         h("div.nav__group", {}, [
-          IconButton("photo_size_select_small", {action: "set-image-size", size: 24}, config.imageSize===24),
-          IconButton("photo_size_select_large", {action: "set-image-size", size: 32}, config.imageSize===32),
-          IconButton("photo_size_select_actual", {action: "set-image-size", size: 64}, config.imageSize===64)
+          IconButton({
+            data: {action: "set-image-size", size: 24},
+            icon: "photo_size_select_small",
+            selected: config.imageSize === 24,
+            tooltip: "Size: small (24x24)"
+          }),
+          IconButton({
+            data: {action: "set-image-size", size: 32},
+            icon: "photo_size_select_large",
+            selected: config.imageSize === 32,
+            tooltip: "Size: medium (32x32)"
+          }),
+          IconButton({
+            data: {action: "set-image-size", size: 64},
+            icon: "photo_size_select_actual",
+            selected: config.imageSize === 64,
+            tooltip: "Size: large (64x64)"
+          })
         ]),
-        // SimpleButton("tileSize:small", {action: "set-tile-size", size: 16}),
-        // SimpleButton("tileSize:medium", {action: "set-tile-size", size: 32}),
-        // SimpleButton("tileSize:large", {action: "set-tile-size", size: 64}),
         h("div.nav__group", {}, [
-          IconButton("panorama_fish_eye", {action: "set-background", background: null}, !config.background),
-          IconButton("lens", {action: "set-background", background: "#ffffff"}, config.background === "#ffffff"),
+          IconButton({
+            data: {action: "set-background", background: null},
+            icon: "panorama_fish_eye",
+            selected: !config.background,
+            tooltip: "Background: transparent"
+          }),
+          IconButton({
+            data: {action: "set-background", background: "#ffffff"},
+            icon: "lens",
+            selected: config.background === "#ffffff",
+            tooltip: "Background: white"
+          })
         ]),
         h("div.nav__group", {}, [
-          IconButton("grid_off", {action: "set-padding", padding: false}, !config.padding),
-          IconButton("grid_on", {action: "set-padding", padding: true}, config.padding),
+          IconButton({
+            data: {action: "set-padding", padding: false},
+            icon: "grid_off",
+            selected: !config.padding,
+            tooltip: "Spacing between emoji: on"
+          }),
+          IconButton({
+            data: {action: "set-padding", padding: true},
+            icon: "grid_on",
+            selected: config.padding,
+            tooltip: "Spacing between emoji: off"
+          })
         ]),
-        h(`a.nav__btn.icon-btn`,
-          {props: downloadButtonProps},
-          h("i.material-icons", {}, "file_download")
-        )
+        IconButton({
+          sel: "a",
+          icon: "file_download",
+          props: downloadButtonProps,
+          tooltip: "Download"
+        })
       ])
     ]);
 

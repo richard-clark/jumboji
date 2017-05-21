@@ -7,6 +7,7 @@ $main-vertical-padding: 10px;
 $gray--light: #eee;
 
 body {
+  font-family: sans-serif;
   overflow: hidden;
 }
 
@@ -84,13 +85,19 @@ body {
   border: none;
   color: inherit;
   cursor: pointer;
+  display: block;
   margin-bottom: 3px;
   margin-top: 3px;
   padding: 3px 5px;
+  text-decoration: none;
 
   &.icon-btn--selected {
     border-bottom: 3px solid #111;
     margin-bottom: 0;
+  }
+
+  .material-icons {
+    display: block;
   }
 }
 
@@ -222,5 +229,54 @@ body {
 
   .nav__group {
     display: flex;
+  }
+}
+
+.tooltip-container {
+  position: relative;
+
+  .tooltip-container__tooltip {
+    &:after {
+      border: 5px solid transparent;
+      border-left: 5px solid #111;
+      border-right: none;
+      content: "";
+      display: block;
+      position: absolute;
+      left: 100%;
+      top: 50%;
+      margin-top: -5px;
+    }
+
+    background-color: #111;
+    display: none;
+    font-size: 12px;
+    margin-right: 5px;
+    padding: 5px;
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    z-index: 1;
+
+    &.tooltip-container__tooltip--align-right {
+      &:after {
+        border-left: none;
+        border-right: 5px solid #111;
+        left: auto;
+        right: 100%;
+      }
+
+      left: 100%;
+      right: auto;
+      margin-left: 5px;
+      margin-right: 0;
+    }
+
+  }
+
+  .tooltip-container__trigger:hover + .tooltip-container__tooltip {
+    display: block;
   }
 }
