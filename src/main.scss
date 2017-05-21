@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons");
 @import "../node_modules/minireset.css/minireset.sass";
 
 $nav-height: 50px;
@@ -13,25 +14,17 @@ $gray--light: #eee;
 
   .main__nav {
     align-items: center;
-    box-shadow: 0 2px 4px $gray--light;
     display: flex;
+    box-shadow: 0 2px 4px $gray--light;
     max-height: $nav-height;
     min-height: $nav-height;
     transition: background-color 0.5s ease-in-out;
-
-    &.main__nav--fg-light {
-      color: #eee;
-    }
-    &.main__nav--fg-dark {
-      color: #111;
-    }
   }
 
   .main__content {
     box-sizing: border-box;
     flex-grow: 1;
-    padding-bottom: $main-vertical-padding;
-    padding-top: $main-vertical-padding;
+    padding: $main-vertical-padding 20px;
   }
 
   .main__loader {
@@ -76,7 +69,11 @@ $gray--light: #eee;
   border: none;
   color: inherit;
   cursor: pointer;
-  padding: 0;
+  padding: 3px 5px;
+
+  &.icon-btn--selected {
+    border-bottom: 3px solid #111;
+  }
 }
 
 .sk-cube-grid {
@@ -90,10 +87,19 @@ $gray--light: #eee;
 }
 
 .sk-cube-grid .sk-cube {
+  &:before {
+    content: "✴️";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 150%;
+  }
   width: 33%;
   height: 33%;
-  background-color: #333;
+  // background-color: #333;
   float: left;
+  position: relative;
   -webkit-animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
           animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
 }
@@ -142,5 +148,53 @@ $gray--light: #eee;
   } 35% {
     -webkit-transform: scale3D(0, 0, 1);
             transform: scale3D(0, 0, 1);
+  }
+}
+
+.nav {
+  transition: color 0.5s ease-in-out;
+
+  .nav__btn {
+    transition: border-color 0.5s ease-in-out;
+  }
+
+  &.nav--fg-light {
+    color: #eee;
+
+    .nav__btn {
+      border-color: #eee;
+    }
+  }
+  &.nav--fg-dark {
+    color: #111;
+
+    .nav__btn {
+      border-color: #111;
+    }
+  }
+
+  .nav__inner {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 50px;
+    padding-right: 50px;
+    width: 100%;
+  }
+
+  .nav__input {
+    border: none;
+    font-size: 25px;
+    padding: 3px;
+    width: 50px;
+    text-align: center;
+    background: white;
+  }
+
+  .nav__group {
+    display: flex;
   }
 }

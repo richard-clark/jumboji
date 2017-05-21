@@ -17,3 +17,6 @@ yarn
 ```
 
 Emoji data comes from here: https://github.com/iamcal/emoji-data
+
+
+🔵

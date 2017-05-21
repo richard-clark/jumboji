@@ -1,12 +1,20 @@
 import * as most from "most";
 import dataUrl from "../data.json";
 
-function loadData() {
-  return fetch(dataUrl).then((response) => response.json());
+function resolveAfter(time=300) {
+  return new Promise((resolve) => window.setTimeout(resolve, time));
 }
 
-export default function Data$() {
+function loadData(initialDelay) {
+  return resolveAfter(initialDelay).then(() => {
+    return fetch(dataUrl).then((response) => response.json());
+  });
+}
 
-  return most.fromPromise(loadData());
+// Wait a bit after calling this so that the DOM can be rendered before
+// making the request.
+export default function Data$({}, initialDelay=300) {
+
+  return most.fromPromise(loadData(initialDelay));
 
 }

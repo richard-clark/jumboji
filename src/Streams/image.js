@@ -1,13 +1,15 @@
 import * as most from "most";
 import * as utils from "../utils.js";
 
-function renderImage(data, {metrics}, {tileSize, imageSize}) {
+function renderImage(data, {metrics}, {tileSize, imageSize, padding}) {
 
-  if (!data) { return; }
+  if (!data) { console.log("render, no data"); return; }
 
-  let padding = 5;
-  let width = tileSize * imageSize + (imageSize - 1) * padding;
-  let height = tileSize * imageSize + (imageSize - 1) * padding;
+  console.log("render, data");
+
+  let paddingAmount = padding ? tileSize * 0.2 : 0;
+  let width = tileSize * imageSize + (imageSize - 1) * paddingAmount
+  let height = tileSize * imageSize + (imageSize - 1) * paddingAmount;
   const TILE_SIZE = tileSize;
 
   const emojiCanvas = utils.createCanvas(width, height);
@@ -16,7 +18,7 @@ function renderImage(data, {metrics}, {tileSize, imageSize}) {
   context.font = `${fontSize}px sans-serif`;
 
   for (let {x, y, item} of data) {
-    context.fillText(item.char, x * TILE_SIZE + x * padding - TILE_SIZE * metrics.xOffset, y * TILE_SIZE + TILE_SIZE + y * padding - TILE_SIZE * metrics.yOffset);
+    context.fillText(item.char, x * TILE_SIZE + x * paddingAmount - TILE_SIZE * metrics.xOffset, y * TILE_SIZE + TILE_SIZE + y * paddingAmount - TILE_SIZE * metrics.yOffset);
   }
 
   const image = emojiCanvas.toDataURL("image/png");
@@ -30,7 +32,8 @@ function imagesAreEqual(a, b) {
   const areEqual = a.dataToRender.data === b.dataToRender.data &&
     a.apperanceData.metrics === b.apperanceData.metrics &&
     a.config.tileSize === b.config.tileSize &&
-    a.config.imageSize === b.config.imageSize;
+    a.config.imageSize === b.config.imageSize &&
+    a.config.padding === b.config.padding;
   return areEqual;
 }
 

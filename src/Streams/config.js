@@ -5,28 +5,25 @@ const INITIAL_CONFIG = {
   emoji: "🌈",
   fullSize: false,
   imageSize: 32,
-  tileSize: 32
+  tileSize: 32,
+  maxVariation: 0.9,
+  padding: true
 };
 
 function actionReducer(state, event) {
-  if (event.action === "toggle-full-size") {
-    return Object.assign({}, state, {
-      fullSize: !state.fullSize
-    });
-  } else if (event.action === "set-image-size") {
-    return Object.assign({}, state, {
-      imageSize: parseInt(event.size)
-    });
-  } else if (event.action === "set-tile-size") {
-    return Object.assign({}, state, {
-      tileSize: parseInt(event.size)
-    });
-  } else if (event.action === "set-emoji") {
-    return Object.assign({}, state, {
-      emoji: event.emoji
-    });
-  } else {
-    return state;
+  switch (event.action) {
+    case "set-emoji":
+      return {...state, emoji: event.emoji}
+    case "set-image-size":
+      return {...state, imageSize: parseInt(event.size)};
+    case "set-tile-size":
+      return {...state, tileSize: parseInt(event.size)};
+    case "toggle-full-size":
+      return {...state, fullSize: !state.fullSize};
+    case "toggle-padding":
+      return {...state, padding: !state.padding};
+    default:
+      return state;
   }
 }
 
@@ -41,17 +38,20 @@ function getRandomEmoji(data) {
 export default function Config$({data$, clickWithDataTarget$}) {
 
   const clickAction$ = clickWithDataTarget$
-    .filter(({action}) => action);
+    .filter(({action}) => action)
+    .tap((config) => console.log("click action"));
 
   const randomizeAction$ = most.combine(
     getRandomEmoji,
     data$,
     clickWithDataTarget$
       .filter(({trigger}) => trigger === "randomize")
-  );
+  ).tap(() => console.log("randomize action"));
 
   return most.merge(clickAction$, randomizeAction$)
     .scan(actionReducer, INITIAL_CONFIG)
-    .tap((config) => console.log(config));
+    .startWith(INITIAL_CONFIG)
+    .tap((config) => console.log(config))
+    .multicast();
 
 }
