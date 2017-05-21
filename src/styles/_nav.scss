@@ -1,0 +1,53 @@
+@import "./variables.scss";
+
+.nav {
+  align-items: center;
+  display: flex;
+  transition: background-color 0.5s ease-in-out,
+    color 0.5s ease-in-out,
+    transform 0.5s ease-in-out 0.5s;
+  transform: translateY(-100%);
+
+  &.nav--visible {
+    transform: none;
+  }
+
+  .nav__btn {
+    transition: border-color 0.5s ease-in-out;
+  }
+
+  &.nav--fg-light {
+    color: $white;
+
+    .nav__btn {
+      border-color: $white;
+    }
+  }
+  &.nav--fg-dark {
+    color: $black;
+
+    .nav__btn {
+      border-color: $black;
+    }
+  }
+
+  .nav__inner {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 50px;
+    padding-right: 50px;
+    width: 100%;
+  }
+
+  .nav__input {
+    width: 50px;
+  }
+
+  .nav__group {
+    display: flex;
+  }
+}

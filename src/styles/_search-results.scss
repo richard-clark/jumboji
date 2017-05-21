@@ -1,0 +1,44 @@
+@import "./variables.scss";
+
+.search-results {
+  display: flex;
+  flex-wrap: wrap;
+  height: 200px;
+  align-content: flex-start;
+  box-shadow: 1px 1px 3px #888 inset;
+  border: 1px solid #888;
+  background: #fff;
+  border-radius: 5px;
+  margin-top: 5px;
+  padding: 10px;
+  position: relative;
+
+  .search-results__empty-state-btn {
+    @include fill-parent;
+    @include plain-button;
+    font-size: 80px;
+  }
+
+  .search-results__result-btn {
+    @include plain-button;
+    font-size: 40px;
+    height: 60px;
+    line-height: 1;
+    width: calc(100% / 10);
+    transition: transform 0.15s ease-in-out;
+
+    &:hover {
+      transform: scale(1.33);
+    }
+  }
+
+  .search-results__more-indicator {
+    align-items: center;
+    display: flex;
+    color: #aaa;
+    height: 60px;
+    width: calc(100% / 10);
+    justify-content: center;
+  }
+
+}

@@ -1,0 +1,16 @@
+@import "./variables.scss";
+
+.icon-btn {
+  @include plain-button;
+  margin: 3px 0;
+  padding: 3px 5px;
+
+  &.icon-btn--selected {
+    border-bottom: 3px solid $black;
+    margin-bottom: 0;
+  }
+
+  .material-icons {
+    display: block;
+  }
+}

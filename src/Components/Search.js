@@ -9,7 +9,7 @@ function getRandomEmoji(possibleEmoji) {
 function EmptyStateButton(possibleEmoji) {
   const emoji = getRandomEmoji(possibleEmoji);
 
-  return h("button.search-results__empty-state", {
+  return h("button.search-results__empty-state-btn", {
     dataset: {trigger: "search-result", emoji}
   }, emoji);
 }
@@ -20,7 +20,7 @@ const ALL_PEOPLE_SHRUGGING = ["🤷🏾‍♂️", "🤷🏻‍♀️", "🤷�
 function dom(results, {show, query}) {
 
   const resultElements = results.results.map((result) => {
-    return h("button.search-results__result", {
+    return h("button.search-results__result-btn", {
       key: result.name,
       dataset: {trigger: "search-result", emoji: result.emoji }
     }, result.emoji);
@@ -42,7 +42,7 @@ function dom(results, {show, query}) {
   }
 
   const modal = h("div.modal-container__modal", {}, [
-    h("input.input.search-input", {
+    h("input.input--outlined.input--large.input.search-input", {
       props: {
         placeholder: `Search for something ${getRandomEmoji(ALL_THE_DETECTIVES)}`,
         value: query

@@ -127,11 +127,12 @@ function view({palette}, config, initialLoading, imageBlob, emojiInputInvalid) {
         h("form.nav__group", {
           on: {submit(event) { event.preventDefault(); } }
         }, [
-          h("input.nav__input.emoji-input", {
+          h("input", {
             class: {
+              input: true,
               nav__input: true,
               "emoji-input": true,
-              "emoji-input--invalid": emojiInputInvalid
+              "input--invalid": emojiInputInvalid
             },
             on: {focus(event) { event.target.select(); }},
             props: {

@@ -1,0 +1,70 @@
+@import "./variables.scss";
+
+@keyframes cube-loader {
+  0%,
+  100%,
+  70% {
+    transform: scale3D(1, 1, 1);
+  }
+
+  35% {
+    transform: scale3D(0, 0, 1);
+  }
+}
+
+.cube-loader {
+  @include center-in-parent;
+  width: 80px;
+  height: 80px;
+
+  .cube-loader__cube {
+    &:before {
+      @include center-in-parent;
+      content: "🔳";
+      font-size: 150%;
+    }
+
+    width: 33%;
+    height: 33%;
+    float: left;
+    position: relative;
+    animation: cube-loader 1.3s infinite ease-in-out;
+
+    &.cube-loader__cube--1 {
+      animation-delay: 0.2s;
+    }
+
+    &.cube-loader__cube--2 {
+      animation-delay: 0.3s;
+    }
+
+    &.cube-loader__cube--3 {
+      animation-delay: 0.4s;
+    }
+
+    &.cube-loader__cube--4 {
+      animation-delay: 0.1s;
+    }
+
+    &.cube-loader__cube--5 {
+      animation-delay: 0.2s;
+    }
+
+    &.cube-loader__cube--6 {
+      animation-delay: 0.3s;
+    }
+
+    &.cube-loader__cube--7 {
+      animation-delay: 0s;
+    }
+
+    &.cube-loader__cube--8 {
+      animation-delay: 0.1s;
+    }
+
+    &.cube-loader__cube--9 {
+      animation-delay: 0.2s;
+    }
+  }
+
+}
