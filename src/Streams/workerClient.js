@@ -4,6 +4,10 @@ import Worker from "../worker.js";
 import * as utils from "../utils.js";
 
 function generateDataToRender(appearanceData, config) {
+  if (!config.emoji) {
+    return { appearanceData }
+  }
+
   const pixelData = utils.getPixelDataForChar(
     config.emoji,
     appearanceData.metrics,

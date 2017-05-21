@@ -4,7 +4,6 @@ import * as utils from "./utils.js";
 import Config$ from "./Streams/config.js";
 import Data$ from "./Streams/data.js";
 import Image$ from "./Streams/image.js";
-import Router$ from "./Streams/router.js";
 import WorkerClient$ from "./Streams/workerClient.js";
 import {DocumentReady$, ClickWithDataTarget$} from "./Streams/dom.js";
 import {EmojiInput$, EmojiInputInvalid$} from "./Streams/emojiInput.js";
@@ -14,7 +13,20 @@ import Nav from "./Components/Nav.js";
 import {h} from "snabbdom/h";
 import domSink from "./domSink.js";
 
+import createHistory from "history/createBrowserHistory";
+import * as routerUtils from "./routerUtils.js";
+const history = createHistory();
+
 const data$ = Data$({});
+
+const emojiToNameMap$ = routerUtils.EmojiToNameMap$({data$});
+
+const stateAction$ = emojiToNameMap$
+  .take(1)
+  .concatMap((emojiToNameMap) => {
+    const location = history.location;
+    return most.from(routerUtils.pathToEvents(location.pathname, emojiToNameMap));
+  });
 
 const documentReady$ = DocumentReady$();
 const clickWithDataTarget$ = ClickWithDataTarget$();
@@ -23,7 +35,18 @@ const appearanceData$ = most.combine(utils.getData, data$, documentReady$);
 
 const emojiInput$ = EmojiInput$({clickWithDataTarget$, data$});
 
-const config$ = Config$({data$, clickWithDataTarget$, emojiInput$});
+const config$ = Config$({data$, clickWithDataTarget$, emojiInput$, stateAction$});
+
+most.combine(
+  (config, emojiToNameMap) => ({config, emojiToNameMap}),
+  config$,
+  emojiToNameMap$
+)
+.debounce(1000)
+.observe(({config, emojiToNameMap}) => {
+  const path = routerUtils.configToPath(config, emojiToNameMap);
+  history.push(path, {});
+});
 
 const workerClient$ = WorkerClient$({
   appearanceData$,
@@ -82,6 +105,3 @@ function main(navVnode, imgVnode, loaderVnode) {
 let dom$ = most.combine(main, nav.dom$, img.dom$, loader.dom$);
 
 domSink({dom$, documentReady$});
-
-const router$ = Router$({});
-router$.observe((location) => console.log("router", location));

@@ -57,7 +57,6 @@ function getNavStyle(palette) {
   // dominantColor
   const backgroundColor = palette[0];
   const bgColorInHSL = convert.rgb.hsl(backgroundColor);
-  console.log(bgColorInHSL);
   let navClass = "nav--fg-light";
   if (bgColorInHSL[2] > 50) {
     navClass = "nav--fg-dark";
@@ -78,7 +77,6 @@ function view({palette}, config, initialLoading, image, emojiInputInvalid) {
   const style = `background-color:${navStyle.backgroundColor}`;
 
   const loadingClass = initialLoading ? "" : ".nav--visible";
-  console.log("loading", loadingClass);
 
   let downloadButtonProps = {style: "cursor:not-allowed"};
   if (image) {
@@ -90,14 +88,10 @@ function view({palette}, config, initialLoading, image, emojiInputInvalid) {
   }
 
   const vnode = h(`nav.main__nav.nav.${navStyle.className}${loadingClass}`,
-    {props: {style}, key: "nav", hook: {
-      init(n){console.log("init",n)},
-      postpatch(n){console.log("postpatch")},
-      destroy(n){console.log("destroy")},
-    }}, [
+    {props: {style}, key: "nav"}, [
       h("div.nav__inner", {key: "nav-inner"}, [
         h("form.nav__group", {
-          on: {submit(event) { console.log("submit"); event.preventDefault(); } }
+          on: {submit(event) { event.preventDefault(); } }
         }, [
           h("input.nav__input.emoji-input", {
             class: {

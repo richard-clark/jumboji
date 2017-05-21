@@ -198,3 +198,12 @@ export function getData(data) {
 export function rand(exclusiveMax) {
   return Math.floor(Math.random() * exclusiveMax);
 }
+
+export function getURLSafeName(name) {
+  return name.replace(/\s+/g, "-")
+    .replace(/&/g, "and")
+    .replace(/:’/g, "-")
+    .replace(/[.,!“()]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, "");
+}

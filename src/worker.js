@@ -34,6 +34,12 @@ function getColorPalette(data) {
 
 function* process(appearanceData, pixelData, maxVariation=0.9) {
 
+  if (!pixelData) {
+    return {
+      loading: false
+    };
+  }
+
   yield { loading: true };
 
   const emojiData = Object.values(appearanceData.data);

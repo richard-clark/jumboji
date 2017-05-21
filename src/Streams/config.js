@@ -1,8 +1,8 @@
 import * as utils from "../utils.js";
 import * as most from "most";
 
-const INITIAL_CONFIG = {
-  emoji: "🌈",
+export const INITIAL_CONFIG = {
+  emoji: null,
   fullSize: false,
   imageSize: 24,
   tileSize: 32,
@@ -38,7 +38,7 @@ function getRandomEmoji(data) {
   };
 }
 
-export default function Config$({data$, clickWithDataTarget$, emojiInput$}) {
+export default function Config$({data$, clickWithDataTarget$, emojiInput$, stateAction$}) {
 
   const clickAction$ = clickWithDataTarget$
     .filter(({action}) => action)
@@ -55,10 +55,12 @@ export default function Config$({data$, clickWithDataTarget$, emojiInput$}) {
     .filter((action) => action.valid)
     .map((action) => ({action: "set-emoji", emoji: action.char}));
 
-  return most.merge(clickAction$, randomizeAction$, emojiInputAction$)
+  const config$ = most.merge(stateAction$, clickAction$, randomizeAction$, emojiInputAction$)
     .scan(actionReducer, INITIAL_CONFIG)
-    .startWith(INITIAL_CONFIG)
+    .debounce(200)
     .tap((config) => console.log(config))
     .multicast();
+
+  return config$;
 
 }

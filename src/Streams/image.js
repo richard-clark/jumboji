@@ -39,7 +39,6 @@ function imagesAreEqual(a, b) {
     a.config.imageSize === b.config.imageSize &&
     a.config.padding === b.config.padding &&
     a.config.background === b.config.background;
-  console.log("equal", areEqual);
   return areEqual;
 }
 
@@ -76,8 +75,6 @@ export default function Image$({dataToRender$, appearanceData$, config$}) {
     config,
     previousConfig: previous.config
   }), {dataToRender: {}})
-
-  .tap(() => console.log("image"))
   .concatMap(({dataToRender, appearanceData, config, previousConfig}) =>
     most.from(clearAndRender(dataToRender, appearanceData, config, previousConfig))
   );
