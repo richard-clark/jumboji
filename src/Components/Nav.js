@@ -94,12 +94,13 @@ function view({palette}, config, initialLoading, image) {
       init(n){console.log("init",n)},
       postpatch(n){console.log("postpatch")},
       destroy(n){console.log("destroy")},
-      // remove(n){console.log("remove")}
-      // update(old,n){console.log("update",JSON.stringify(old),n)}
     }}, [
       h("div.nav__inner", {key: "nav-inner"}, [
-        h("div.nav__group", {}, [
-          h("input.nav__input", {
+        h("form.nav__group", {
+          on: {submit(event) { console.log("submit"); event.preventDefault(); } }
+        }, [
+          h("input.nav__input.emoji-input", {
+            on: {focus(event) { event.target.select(); }},
             props: {
               style: `background-color:${navStyle.inputBackgroundColor}`,
               value: config.emoji

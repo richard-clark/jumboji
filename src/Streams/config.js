@@ -38,6 +38,33 @@ function getRandomEmoji(data) {
   };
 }
 
+function EmojiChar$(data$) {
+  return data$.map((data) => {
+    const chars = data.map(utils.getChar);
+    return new Set(chars);
+  }).multicast();
+}
+
+function handleEmojiInputSubmit(validChars) {
+  if (!validChars) {
+    return { loading: true };
+  }
+
+  const char = document.querySelector(".emoji-input").value;
+
+  return {
+    loading: false,
+    valid: validChars.has(char),
+    char
+  };
+}
+
+function EmojiInput$({clickWithDataTarget$, emojiChar$}) {
+  return clickWithDataTarget$
+    .filter(({trigger}) => trigger === "emoji-input-submit")
+    .sample(handleEmojiInputSubmit, emojiChar$);
+}
+
 export default function Config$({data$, clickWithDataTarget$}) {
 
   const clickAction$ = clickWithDataTarget$
@@ -51,7 +78,16 @@ export default function Config$({data$, clickWithDataTarget$}) {
       .filter(({trigger}) => trigger === "randomize")
   ).tap(() => console.log("randomize action"));
 
-  return most.merge(clickAction$, randomizeAction$)
+
+  const emojiChar$ = EmojiChar$(data$);
+
+  const emojiInput$ = EmojiInput$({clickWithDataTarget$, emojiChar$});
+
+  const emojiInputAction$ = emojiInput$
+    .filter((action) => action.valid)
+    .map((action) => ({action: "set-emoji", emoji: action.char}));
+
+  return most.merge(clickAction$, randomizeAction$, emojiInputAction$)
     .scan(actionReducer, INITIAL_CONFIG)
     .startWith(INITIAL_CONFIG)
     .tap((config) => console.log(config))

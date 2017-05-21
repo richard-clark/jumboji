@@ -4,7 +4,9 @@
 $nav-height: 50px;
 $main-vertical-padding: 10px;
 
-$gray--light: #eee;
+$gray--light: #ccc;
+$black: #111;
+$white: #eee;
 
 body {
   font-family: sans-serif;
@@ -92,7 +94,7 @@ body {
   text-decoration: none;
 
   &.icon-btn--selected {
-    border-bottom: 3px solid #111;
+    border-bottom: 3px solid $black;
     margin-bottom: 0;
   }
 
@@ -192,17 +194,17 @@ body {
   }
 
   &.nav--fg-light {
-    color: #eee;
+    color: $white;
 
     .nav__btn {
-      border-color: #eee;
+      border-color: $white;
     }
   }
   &.nav--fg-dark {
-    color: #111;
+    color: $black;
 
     .nav__btn {
-      border-color: #111;
+      border-color: $black;
     }
   }
 
@@ -238,7 +240,7 @@ body {
   .tooltip-container__tooltip {
     &:after {
       border: 5px solid transparent;
-      border-left: 5px solid #111;
+      border-left: 5px solid $black;
       border-right: none;
       content: "";
       display: block;
@@ -248,7 +250,8 @@ body {
       margin-top: -5px;
     }
 
-    background-color: #111;
+    background-color: $black;
+    color: $white;
     display: none;
     font-size: 12px;
     margin-right: 5px;
@@ -263,7 +266,7 @@ body {
     &.tooltip-container__tooltip--align-right {
       &:after {
         border-left: none;
-        border-right: 5px solid #111;
+        border-right: 5px solid $black;
         left: auto;
         right: 100%;
       }
