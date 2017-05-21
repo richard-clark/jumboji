@@ -24,7 +24,6 @@ function eventsAreEqual(a, b) {
   const areEqual = a.appearanceData.metrics === b.appearanceData.metrics
     && a.config.emoji === b.config.emoji
     && a.config.imageSize === b.config.imageSize;
-  console.log("events are equal", areEqual);
   return areEqual;
 }
 

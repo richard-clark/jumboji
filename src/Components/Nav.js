@@ -76,12 +76,13 @@ function ImageBlob$({image$}) {
     .skipRepeats()
     .map((image) => {
       if (image) {
-        console.log("genearting blob");
         // http://stackoverflow.com/a/16245768
         const splitIndex = image.indexOf(",");
-        const binaryData = atob(image.slice(splitIndex+1))
-          .split("")
-          .map((s) => s.charCodeAt(0));
+        const imageData = atob(image.slice(splitIndex+1));
+        let binaryData = new Array(imageData.length);
+        for (let i = 0; i < binaryData.length; i++) {
+          binaryData[i] = imageData.charCodeAt(i);
+        }
         const byteArray = new Uint8Array(binaryData);
         // http://stackoverflow.com/a/23956661
         const blob = new Blob([byteArray], {type: "image/png"});

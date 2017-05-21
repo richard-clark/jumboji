@@ -38,27 +38,29 @@ function getRandomEmoji(data) {
   };
 }
 
-export default function Config$({data$, clickWithDataTarget$, emojiInput$, stateAction$}) {
+export default function Config$({data$, clickWithDataTarget$, emojiInput$, stateAction$, searchAction$}) {
 
   const clickAction$ = clickWithDataTarget$
-    .filter(({action}) => action)
-    .tap((config) => console.log("click action"));
+    .filter(({action}) => action);
 
   const randomizeAction$ = most.combine(
     getRandomEmoji,
     data$,
     clickWithDataTarget$
       .filter(({trigger}) => trigger === "randomize")
-  ).tap(() => console.log("randomize action"));
+  );
 
   const emojiInputAction$ = emojiInput$
     .filter((action) => action.valid)
     .map((action) => ({action: "set-emoji", emoji: action.char}));
 
-  const config$ = most.merge(stateAction$, clickAction$, randomizeAction$, emojiInputAction$)
+  const _searchAction$ = clickWithDataTarget$
+    .filter(({trigger}) => trigger === "search-result")
+    .map((action) => ({action: "set-emoji", emoji: action.emoji}));
+
+  const config$ = most.merge(stateAction$, clickAction$, randomizeAction$, emojiInputAction$, _searchAction$)
     .scan(actionReducer, INITIAL_CONFIG)
     .debounce(200)
-    .tap((config) => console.log(config))
     .multicast();
 
   return config$;

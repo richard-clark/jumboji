@@ -4,12 +4,14 @@ import * as utils from "./utils.js";
 import Config$ from "./Streams/config.js";
 import Data$ from "./Streams/data.js";
 import Image$ from "./Streams/image.js";
+import {DataMatchingSearch$, SearchAction$, SearchParams$} from "./Streams/search.js";
 import WorkerClient$ from "./Streams/workerClient.js";
 import {DocumentReady$, ClickWithDataTarget$} from "./Streams/dom.js";
 import {EmojiInput$, EmojiInputInvalid$} from "./Streams/emojiInput.js";
 import Img from "./Components/Img.js";
 import Loader from "./Components/Loader.js";
 import Nav from "./Components/Nav.js";
+import Search from "./Components/Search.js";
 import {h} from "snabbdom/h";
 import domSink from "./domSink.js";
 
@@ -34,6 +36,13 @@ const clickWithDataTarget$ = ClickWithDataTarget$();
 const appearanceData$ = most.combine(utils.getData, data$, documentReady$);
 
 const emojiInput$ = EmojiInput$({clickWithDataTarget$, data$});
+
+const searchAction$ = SearchAction$({clickWithDataTarget$});
+const searchParams$ = SearchParams$({clickWithDataTarget$, searchAction$});
+const dataMatchingSearch$ = DataMatchingSearch$({
+  searchParams$,
+  data$: data$.startWith([])
+});
 
 const config$ = Config$({data$, clickWithDataTarget$, emojiInput$, stateAction$});
 
@@ -90,14 +99,17 @@ let nav = Nav({
 
 let loader = Loader({ loading$ });
 
-function main(navVnode, imgVnode, loaderVnode) {
+let search = Search({ dataMatchingSearch$, searchParams$ });
+
+function main(navVnode, imgVnode, loaderVnode, searchVnode) {
   return h("main.main", {key: "main"}, [
     navVnode,
     imgVnode,
-    loaderVnode
+    loaderVnode,
+    searchVnode
   ])
 }
 
-let dom$ = most.combine(main, nav.dom$, img.dom$, loader.dom$);
+let dom$ = most.combine(main, nav.dom$, img.dom$, loader.dom$, search.dom$);
 
 domSink({dom$, documentReady$});
