@@ -36,7 +36,24 @@ function imagesAreEqual(a, b) {
 }
 
 export default function Image$({dataToRender$, apperanceData$, config$}) {
-  return most.combine(
+  // When anything that affects the size changes, we'll attempt to render the
+  // existing pixel data using the new configuration, resulting in a flicker of
+  // an image that is too small or too large. This watches for changes to the
+  // size of the image, and clears it, so we don't render anything.
+  const clearImage$ = config$
+    .scan((previous, config) => ({
+      tileSize: config.tileSize,
+      imageSize: config.imageSize,
+      padding: config.padding,
+      sizeChanged: config.tileSize !== previous.tileSize
+        || config.imageSize !== previous.imageSize
+        || config.padding !== previous.padding
+    }), {})
+    .filter(({sizeChanged}) => sizeChanged)
+    .map(() => null)
+    .tap(() => console.log("clear image 2"));
+
+  const image$ = most.combine(
     ((dataToRender, apperanceData, config) =>
       ({dataToRender, apperanceData, config})),
     dataToRender$,
@@ -47,4 +64,6 @@ export default function Image$({dataToRender$, apperanceData$, config$}) {
   .map(({dataToRender, apperanceData, config}) =>
     renderImage(dataToRender.data, apperanceData, config)
   );
+
+  return most.merge(image$, clearImage$);
 }
