@@ -57,16 +57,13 @@ function getNavStyle(palette) {
   // dominantColor
   const backgroundColor = palette[0];
   const bgColorInHSL = convert.rgb.hsl(backgroundColor);
-  let navClass = "nav--fg-light";
-  if (bgColorInHSL[2] > 50) {
-    navClass = "nav--fg-dark";
-  }
+  const useDarkTheme = bgColorInHSL[2] > 50;
   const inputBGColor = backgroundColor.map((component) =>
     Math.round(255*0.8 + component*0.2)
   );
   return {
     backgroundColor: colorToRGBString(backgroundColor),
-    className: navClass,
+    useDarkTheme,
     inputBackgroundColor: colorToRGBString(inputBGColor)
   };
 }
@@ -75,8 +72,6 @@ function view({palette}, config, initialLoading, image, emojiInputInvalid) {
 
   const navStyle = getNavStyle(palette);
   const style = `background-color:${navStyle.backgroundColor}`;
-
-  const loadingClass = initialLoading ? "" : ".nav--visible";
 
   let downloadButtonProps = {style: "cursor:not-allowed"};
   if (image) {
@@ -87,8 +82,18 @@ function view({palette}, config, initialLoading, image, emojiInputInvalid) {
     };
   }
 
-  const vnode = h(`nav.main__nav.nav.${navStyle.className}${loadingClass}`,
-    {props: {style}, key: "nav"}, [
+  const vnode = h(`nav`,
+    {
+      class: {
+        main__nav: true,
+        nav: true,
+        'nav--fg-light': !navStyle.useDarkTheme,
+        'nav--fg-dark': navStyle.useDarkTheme,
+        "nav--visible": !initialLoading
+      },
+      props: {style},
+      key: "nav"
+    }, [
       h("div.nav__inner", {key: "nav-inner"}, [
         h("form.nav__group", {
           on: {submit(event) { event.preventDefault(); } }
