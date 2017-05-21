@@ -20,3 +20,6 @@ Emoji data comes from here: https://github.com/iamcal/emoji-data
 
 
 🔵
+
+
+Loader is from here: https://github.com/webpack-contrib/css-loader

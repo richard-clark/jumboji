@@ -31,10 +31,17 @@ const workerClient$ = WorkerClient$({
 });
 
 const dataToRender$ = workerClient$
-  .filter(({data}) => data)
+  .tap((data) => console.log("dtr", data))
+  .scan((previous, current) => ({
+    data: current.data,
+    palette: current.palette || previous.palette
+  }), {
+    palette: [[255, 255, 255]]
+  })
   .startWith({
-    palette: [[128, 0, 0]]
-  });
+    palette: [[255, 255, 255]]
+  })
+  .multicast();
 let nav = Nav({dataToRender$, config$});
 
 let image$ = Image$({dataToRender$, apperanceData$, config$})

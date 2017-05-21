@@ -5,8 +5,6 @@ function renderImage(data, {metrics}, {tileSize, imageSize, padding}) {
 
   if (!data) { console.log("render, no data"); return; }
 
-  console.log("render, data");
-
   let paddingAmount = padding ? tileSize * 0.2 : 0;
   let width = tileSize * imageSize + (imageSize - 1) * paddingAmount
   let height = tileSize * imageSize + (imageSize - 1) * paddingAmount;

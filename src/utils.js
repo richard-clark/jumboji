@@ -108,13 +108,17 @@ const EMOJI_WITH_VARIANTS = new Set([
   0x1F6CB, 0x1F6CD, 0x1F6CE, 0x1F6CF, 0x1F6E0, 0x1F6E1, 0x1F6E2, 0x1F6E3,
   0x1F6E4, 0x1F6E5, 0x1F6E9, 0x1F6F0, 0x1F6F3
 ]);
-const VARIANT_CHAR = String.fromCodePoint(0xFE0F);
 
 export function getChar(dataPoint) {
-  return dataPoint.keycode.split(" ")
+  const chars = dataPoint.keycode.split(" ")
     .map((s) => s.split("+")[1])
-    .map((s) => parseInt(s, 16))
-    .map((s) => String.fromCodePoint(s) + (EMOJI_WITH_VARIANTS.has(s) ? VARIANT_CHAR : ""))
+    .map((s) => parseInt(s, 16));
+
+  if (chars.length === 1 && EMOJI_WITH_VARIANTS.has(chars[0])) {
+    chars.push(0xFE0F);
+  }
+
+  return chars.map((s) => String.fromCodePoint(s))
     .join("");
 }
 
