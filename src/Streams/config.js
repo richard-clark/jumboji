@@ -7,7 +7,7 @@ export const INITIAL_CONFIG = {
   imageSize: 24,
   tileSize: 32,
   maxVariation: 0.9,
-  padding: true,
+  padding: false,
   background: null
 };
 

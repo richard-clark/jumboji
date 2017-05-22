@@ -198,13 +198,13 @@ function view({palette}, config, initialLoading, imageBlob, emojiInputInvalid) {
             data: {action: "set-padding", padding: false},
             icon: "grid_off",
             selected: !config.padding,
-            tooltip: "Spacing between emoji: on"
+            tooltip: "Spacing between emoji: off"
           }),
           IconButton({
             data: {action: "set-padding", padding: true},
             icon: "grid_on",
             selected: config.padding,
-            tooltip: "Spacing between emoji: off"
+            tooltip: "Spacing between emoji: on"
           })
         ]),
         IconButton({

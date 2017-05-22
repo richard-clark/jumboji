@@ -35,8 +35,8 @@ export function configToPath(config, emojiToNameMap) {
     components.push(`bg-${background}`)
   }
 
-  if (!config.padding) {
-    components.push("no-padding");
+  if (config.padding) {
+    components.push("padding");
   }
 
   components.reverse();
@@ -68,10 +68,10 @@ export function pathToEvents(path, emojiToNameMap) {
       }
     }
 
-    if (option === "no-padding") {
+    if (option === "padding") {
       actions.push({
         action: "set-padding",
-        padding: false
+        padding: true
       });
       continue;
     }
