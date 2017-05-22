@@ -14,21 +14,11 @@ import Nav from "./Components/Nav.js";
 import Search from "./Components/Search.js";
 import {h} from "snabbdom/h";
 import domSink from "./domSink.js";
-
-import createHistory from "history/createBrowserHistory";
 import * as routerUtils from "./routerUtils.js";
-const history = createHistory();
 
 const data$ = Data$({});
 
-const emojiToNameMap$ = routerUtils.EmojiToNameMap$({data$});
-
-const stateAction$ = emojiToNameMap$
-  .take(1)
-  .concatMap((emojiToNameMap) => {
-    const location = history.location;
-    return most.from(routerUtils.pathToEvents(location.pathname, emojiToNameMap));
-  });
+const routerInterface = routerUtils.makeInterface({data$});
 
 const documentReady$ = DocumentReady$();
 const clickWithDataTarget$ = ClickWithDataTarget$();
@@ -44,18 +34,13 @@ const dataMatchingSearch$ = DataMatchingSearch$({
   data$: data$.startWith([])
 });
 
-const config$ = Config$({data$, clickWithDataTarget$, emojiInput$, stateAction$});
-
-most.combine(
-  (config, emojiToNameMap) => ({config, emojiToNameMap}),
-  config$,
-  emojiToNameMap$
-)
-.debounce(1000)
-.observe(({config, emojiToNameMap}) => {
-  const path = routerUtils.configToPath(config, emojiToNameMap);
-  history.push(path, {});
+const config$ = Config$({
+  data$,
+  clickWithDataTarget$,
+  emojiInput$,
+  stateAction$: routerInterface.stateAction$
 });
+routerInterface.observe(config$);
 
 const workerClient$ = WorkerClient$({
   appearanceData$,

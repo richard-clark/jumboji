@@ -1,5 +1,8 @@
 import {INITIAL_CONFIG} from "./Streams/config.js";
 import * as utils from "./utils.js";
+import createHistory from "history/createBrowserHistory";
+import * as most from "most";
+import Observable from "zen-observable";
 
 export function EmojiToNameMap$({data$}) {
   return data$
@@ -14,7 +17,7 @@ export function EmojiToNameMap$({data$}) {
         nameForChar: {},
         charForName: {}
       })
-    });
+    }).multicast();
 }
 
 export function configToPath(config, emojiToNameMap) {
@@ -44,12 +47,10 @@ export function configToPath(config, emojiToNameMap) {
 }
 
 export function pathToEvents(path, emojiToNameMap) {
+  console.log("pathToEvents", path);
+
   const options = path.slice(1).split("/").reverse();
   const actions = [];
-  actions.push({
-    action: "set-emoji",
-    emoji: "🌈"
-  })
 
   for (let index = 0; index < options.length; index++) {
     const option = options[index];
@@ -98,4 +99,54 @@ export function pathToEvents(path, emojiToNameMap) {
   }
 
   return actions;
+}
+
+function getHistoryObservable(history) {
+  return new Observable((observer) => {
+    const unlisten = history.listen((location) => {
+      observer.next(location);
+    });
+    observer.next(history.location);
+    return () => unlisten();
+  });
+}
+
+export function makeInterface({data$}) {
+
+  const history = createHistory();
+
+  const emojiToNameMap$ = EmojiToNameMap$({data$});
+
+  const stateAction$ = most.combine(
+    (location, emojiToNameMap) => ({location, emojiToNameMap}),
+    most.from(getHistoryObservable(history)),
+    emojiToNameMap$
+  )
+  .concatMap(({location, emojiToNameMap}) =>
+    most.from(pathToEvents(location.pathname, emojiToNameMap))
+  )
+  .multicast();
+
+  function observe(config$) {
+    most.combine(
+      (config, emojiToNameMap) => ({config, emojiToNameMap}),
+      config$,
+      emojiToNameMap$
+    )
+    .debounce(1000)
+    .observe(({config, emojiToNameMap}) => {
+      const path = configToPath(config, emojiToNameMap);
+      if (path === history.location.pathname) {
+        return;
+      }
+      history.push(path, {});
+    });
+
+  }
+
+  return {
+    observe,
+    stateAction$
+  };
+
 }

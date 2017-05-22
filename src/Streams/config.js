@@ -2,7 +2,7 @@ import * as utils from "../utils.js";
 import * as most from "most";
 
 export const INITIAL_CONFIG = {
-  emoji: null,
+  emoji: "🌈",
   fullSize: false,
   imageSize: 24,
   tileSize: 32,
@@ -38,6 +38,15 @@ function getRandomEmoji(data) {
   };
 }
 
+function objectsAreEqual(obj1, obj2) {
+  if (obj1 === obj2)  { return true; }
+  if (obj1 && !obj2 || obj2 && !obj1) { return false; }
+  const obj1Keys = Object.keys(obj1);
+  const obj2Keys = Object.keys(obj2);
+  return obj1Keys.length === obj2Keys.length
+    && obj1Keys.every((key) => obj1[key] === obj2[key]);
+}
+
 export default function Config$({data$, clickWithDataTarget$, emojiInput$, stateAction$, searchAction$}) {
 
   const clickAction$ = clickWithDataTarget$
@@ -61,6 +70,11 @@ export default function Config$({data$, clickWithDataTarget$, emojiInput$, state
 
   const config$ = most.merge(stateAction$, clickAction$, randomizeAction$, emojiInputAction$, _searchAction$)
     .scan(actionReducer, INITIAL_CONFIG)
+    .skipRepeatsWith((a, b) => {
+      const areEqual = objectsAreEqual(a, b);
+      console.log("Are equal", areEqual, a, b);
+      return areEqual;
+    })
     .debounce(200)
     .multicast();
 
