@@ -52,7 +52,6 @@ function objectsAreEqual(obj1, obj2) {
 export default function Config$({
   data$,
   clickWithDataTarget$,
-  emojiInput$,
   stateAction$,
   searchAction$,
   initialConfig$
@@ -68,10 +67,6 @@ export default function Config$({
       .filter(({trigger}) => trigger === "randomize")
   );
 
-  const emojiInputAction$ = emojiInput$
-    .filter((action) => action.valid)
-    .map((action) => ({action: "set-emoji", emoji: action.char}));
-
   const _searchAction$ = clickWithDataTarget$
     .filter(({trigger}) => trigger === "search-result")
     .filter((action) => action.emoji)
@@ -80,7 +75,7 @@ export default function Config$({
   const config$ = initialConfig$
     .take(1)
     .continueWith((initialConfig) => {
-      return most.merge(stateAction$, clickAction$, randomizeAction$, emojiInputAction$, _searchAction$)
+      return most.merge(stateAction$, clickAction$, randomizeAction$, _searchAction$)
         .scan(actionReducer, initialConfig);
     })
     .skipRepeatsWith(objectsAreEqual)

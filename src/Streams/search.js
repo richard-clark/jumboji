@@ -7,7 +7,8 @@ function search(data, searchParams) {
 
   if (query.length > 0) {
     results = data.filter((point) => {
-      return point.name.toLowerCase().indexOf(query) >= 0 ||
+      return query === utils.getChar(point) ||
+        point.name.toLowerCase().indexOf(query) >= 0 ||
         point.keywords.some((keyword) => keyword.indexOf(query) >= 0);
     })
   }

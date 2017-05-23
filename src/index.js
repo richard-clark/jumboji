@@ -7,7 +7,6 @@ import Image$ from "./Streams/image.js";
 import {DataMatchingSearch$, SearchAction$, SearchParams$} from "./Streams/search.js";
 import WorkerClient$ from "./Streams/workerClient.js";
 import {DocumentReady$, ClickWithDataTarget$} from "./Streams/dom.js";
-import {EmojiInput$, EmojiInputInvalid$} from "./Streams/emojiInput.js";
 import Img from "./Components/Img.js";
 import Loader from "./Components/Loader.js";
 import Nav from "./Components/Nav.js";
@@ -25,8 +24,6 @@ const clickWithDataTarget$ = ClickWithDataTarget$();
 
 const appearanceData$ = most.combine(utils.getData, data$, documentReady$);
 
-const emojiInput$ = EmojiInput$({clickWithDataTarget$, data$});
-
 const searchAction$ = SearchAction$({clickWithDataTarget$});
 const searchParams$ = SearchParams$({clickWithDataTarget$, searchAction$});
 const dataMatchingSearch$ = DataMatchingSearch$({
@@ -37,7 +34,6 @@ const dataMatchingSearch$ = DataMatchingSearch$({
 const config$ = Config$({
   data$,
   clickWithDataTarget$,
-  emojiInput$,
   initialConfig$: routerInterface.initialConfig$,
   stateAction$: routerInterface.stateAction$
 });
@@ -73,14 +69,11 @@ const loading$ = most.combine(
   workerLoading$
 );
 
-let emojiInputInvalid$ = EmojiInputInvalid$({emojiInput$});
-
 let nav = Nav({
   dataToRender$,
   config$,
   initialLoading$,
-  image$,
-  emojiInputInvalid$
+  image$
 });
 
 let loader = Loader({ loading$ });

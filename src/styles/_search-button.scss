@@ -1,0 +1,22 @@
+@import "./variables.scss";
+
+.search-button {
+  @include plain-button;
+  border: none;
+  color: #111;
+  font-size: 25px;
+  padding: 3px 10px;
+  text-align: center;
+  background: $white;
+  box-sizing: border-box;
+  border-radius: 5px;
+
+  .search-button__inner {
+    align-items: center;
+    display: flex;
+  }
+
+  .search-button__emoji {
+    padding: 0 15px;
+  }
+}

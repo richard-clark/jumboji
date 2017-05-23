@@ -94,7 +94,7 @@ function ImageBlob$({image$}) {
 
 }
 
-function view({palette}, config, initialLoading, imageBlob, emojiInputInvalid) {
+function view({palette}, config, initialLoading, imageBlob) {
 
   const navStyle = getNavStyle(palette);
   const style = `background-color:${navStyle.backgroundColor}`;
@@ -124,41 +124,27 @@ function view({palette}, config, initialLoading, imageBlob, emojiInputInvalid) {
       key: "nav"
     }, [
       h("div.nav__inner", {key: "nav-inner"}, [
-        h("form.nav__group", {
-          on: {submit(event) { event.preventDefault(); } }
-        }, [
-          h("input", {
-            class: {
-              input: true,
-              nav__input: true,
-              "emoji-input": true,
-              "input--invalid": emojiInputInvalid
-            },
-            on: {focus(event) { event.target.select(); }},
-            props: {
-              style: `background-color:${navStyle.inputBackgroundColor}`,
-              value: config.emoji
-            }
+        h("div.nav__group", {}, [
+          TooltipContainer({
+            tooltip: "Search...",
+            tooltipAlignRight: true,
+            trigger: h("button", {
+              class: {
+                "search-button": true
+              },
+              dataset: {trigger: "show-serch-modal"}
+            }, h("div.search-button__inner", {}, [
+              h("i.material-icons.search-button__icon", {}, "search"),
+              h("span.search-button__emoji", {}, config.emoji)
+            ]))
           }),
           IconButton({
-            icon: "check",
-            data: {trigger: "emoji-input-submit"},
-            tooltip: "Submit",
+            icon: "refresh",
+            data: {trigger: "randomize"},
+            tooltip: "Random emoji 🍀",
             tooltipAlignRight: true
           })
         ]),
-        IconButton({
-          icon: "refresh",
-          data: {trigger: "randomize"},
-          tooltip: "Random emoji 🍀",
-          tooltipAlignRight: true
-        }),
-        IconButton({
-          icon: "search",
-          data: {trigger: "show-serch-modal"},
-          tooltip: "Search...",
-          tooltipAlignRight: true
-        }),
         h("div.nav__group", {}, [
           IconButton({
             data: {action: "set-image-size", size: 24},
@@ -224,8 +210,7 @@ export default function Nav({
   dataToRender$,
   config$,
   initialLoading$,
-  image$,
-  emojiInputInvalid$
+  image$
 }) {
 
   const imageBlob$ = ImageBlob$({image$});
@@ -235,8 +220,7 @@ export default function Nav({
     dataToRender$,
     config$,
     initialLoading$,
-    imageBlob$,
-    emojiInputInvalid$
+    imageBlob$
   );
 
   return {dom$};

@@ -46,7 +46,7 @@ function dom(results, {show, query}) {
       h("button.modal-close-container__btn", {
         dataset: {trigger: "search-result"}
       }, h("i.material-icons", {}, "close")),
-      h("input.input--outlined.input--large.input.search-input", {
+      h("input.input.search-input", {
         props: {
           placeholder: `Search for something ${getRandomEmoji(ALL_THE_DETECTIVES)}`,
           value: query
