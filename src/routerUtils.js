@@ -53,7 +53,8 @@ export function configToPath(config, emojiToNameMap) {
 export function pathToEvents(path, emojiToNameMap) {
   console.log("pathToEvents", path);
 
-  const options = path.slice(1).split("/").reverse();
+  const options = path.slice(2).split("/").reverse();
+  console.log(options);
   const actions = [];
 
   for (let index = 0; index < options.length; index++) {
@@ -127,7 +128,7 @@ function getHistoryObservable(history) {
 }
 
 function getInitialState(history, emojiToNameMap) {
-  const path = history.location.pathname;
+  const path = history.location.hash;
   const actions = pathToEvents(path, emojiToNameMap);
   return actions.reduce(configStream.actionReducer, configStream.INITIAL_CONFIG);
 }
@@ -148,7 +149,7 @@ export function makeInterface({data$}) {
     emojiToNameMap$
   )
   .concatMap(({location, emojiToNameMap}) =>
-    most.from(pathToEvents(location.pathname, emojiToNameMap))
+    most.from(pathToEvents(location.hash, emojiToNameMap))
   )
   .multicast();
 
@@ -160,11 +161,12 @@ export function makeInterface({data$}) {
     )
     .observe(({config, emojiToNameMap}) => {
       if (!config.emoji) {
+        console.log(config);
         console.log("no emoji in config, skipping route update");
         return;
       }
-      const path = configToPath(config, emojiToNameMap);
-      if (path === history.location.pathname) {
+      const path = "#" + configToPath(config, emojiToNameMap);
+      if (path === history.location.hash) {
         return;
       }
       history.push(path, {});
