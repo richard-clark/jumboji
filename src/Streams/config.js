@@ -2,7 +2,7 @@ import * as utils from "../utils.js";
 import * as most from "most";
 
 export const INITIAL_CONFIG = {
-  // emoji: "🌈",
+  emoji: "🌈",
   fullSize: false,
   imageSize: 24,
   tileSize: 32,
@@ -11,8 +11,7 @@ export const INITIAL_CONFIG = {
   background: null
 };
 
-function actionReducer(state, event) {
-  console.log("event", event);
+export function actionReducer(state, event) {
   switch (event.action) {
     case "set-background":
       return {...state, background: event.background};
@@ -50,7 +49,14 @@ function objectsAreEqual(obj1, obj2) {
     && obj1Keys.every((key) => obj1[key] === obj2[key]);
 }
 
-export default function Config$({data$, clickWithDataTarget$, emojiInput$, stateAction$, searchAction$}) {
+export default function Config$({
+  data$,
+  clickWithDataTarget$,
+  emojiInput$,
+  stateAction$,
+  searchAction$,
+  initialConfig$
+}) {
 
   const clickAction$ = clickWithDataTarget$
     .filter(({action}) => action);
@@ -71,14 +77,15 @@ export default function Config$({data$, clickWithDataTarget$, emojiInput$, state
     .filter((action) => action.emoji)
     .map((action) => ({action: "set-emoji", emoji: action.emoji}));
 
-  const config$ = most.merge(stateAction$, clickAction$, randomizeAction$, emojiInputAction$, _searchAction$)
-    .scan(actionReducer, INITIAL_CONFIG)
-    .skipRepeatsWith((a, b) => {
-      const areEqual = objectsAreEqual(a, b);
-      console.log("Are equal", areEqual, a, b);
-      return areEqual;
+  const config$ = initialConfig$
+    .take(1)
+    .continueWith((initialConfig) => {
+      return most.merge(stateAction$, clickAction$, randomizeAction$, emojiInputAction$, _searchAction$)
+        .scan(actionReducer, initialConfig);
     })
+    .skipRepeatsWith(objectsAreEqual)
     .debounce(200)
+    .startWith({})
     .multicast();
 
   return config$;

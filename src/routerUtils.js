@@ -1,4 +1,4 @@
-import {INITIAL_CONFIG} from "./Streams/config.js";
+import * as configStream from "./Streams/config.js";
 import * as utils from "./utils.js";
 import createHistory from "history/createBrowserHistory";
 import * as most from "most";
@@ -25,7 +25,7 @@ export function configToPath(config, emojiToNameMap) {
 
   components.push(emojiToNameMap.nameForChar[config.emoji]);
 
-  if (config.imageSize !== INITIAL_CONFIG.imageSize) {
+  if (config.imageSize !== configStream.INITIAL_CONFIG.imageSize) {
     components.push(`is-${config.imageSize}`);
   }
 
@@ -38,7 +38,7 @@ export function configToPath(config, emojiToNameMap) {
     components.push(`bg-${background}`)
   }
 
-  if (config.sampleNeighbors !== INITIAL_CONFIG.sampleNeighbors) {
+  if (config.sampleNeighbors !== configStream.INITIAL_CONFIG.sampleNeighbors) {
     components.push(`n-${config.sampleNeighbors}`);
   }
 
@@ -70,11 +70,6 @@ export function pathToEvents(path, emojiToNameMap) {
         continue;
       } else {
         console.log("warning, no emoji at first position");
-        actions.push({
-          action: "set-emoji",
-          emoji: "🌈"
-        });
-        continue;
       }
     }
 
@@ -126,9 +121,15 @@ function getHistoryObservable(history) {
     const unlisten = history.listen((location) => {
       observer.next(location);
     });
-    observer.next(history.location);
+    // observer.next(history.location);
     return () => unlisten();
   });
+}
+
+function getInitialState(history, emojiToNameMap) {
+  const path = history.location.pathname;
+  const actions = pathToEvents(path, emojiToNameMap);
+  return actions.reduce(configStream.actionReducer, configStream.INITIAL_CONFIG);
 }
 
 export function makeInterface({data$}) {
@@ -136,6 +137,10 @@ export function makeInterface({data$}) {
   const history = createHistory();
 
   const emojiToNameMap$ = EmojiToNameMap$({data$});
+
+  const initialConfig$ = emojiToNameMap$
+    .map((emojiToNameMap) => getInitialState(history, emojiToNameMap))
+    .multicast();
 
   const stateAction$ = most.combine(
     (location, emojiToNameMap) => ({location, emojiToNameMap}),
@@ -153,7 +158,6 @@ export function makeInterface({data$}) {
       config$,
       emojiToNameMap$
     )
-    .debounce(1000)
     .observe(({config, emojiToNameMap}) => {
       if (!config.emoji) {
         console.log("no emoji in config, skipping route update");
@@ -170,7 +174,8 @@ export function makeInterface({data$}) {
 
   return {
     observe,
-    stateAction$
+    stateAction$,
+    initialConfig$
   };
 
 }

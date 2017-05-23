@@ -38,6 +38,7 @@ const config$ = Config$({
   data$,
   clickWithDataTarget$,
   emojiInput$,
+  initialConfig$: routerInterface.initialConfig$,
   stateAction$: routerInterface.stateAction$
 });
 routerInterface.observe(config$);
