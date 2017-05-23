@@ -145,7 +145,7 @@ function view({palette}, config, initialLoading, imageBlob) {
             tooltipAlignRight: true
           })
         ]),
-        h("div.nav__group", {}, [
+        h("div.nav__group.nav__group--l", {}, [
           IconButton({
             data: {action: "set-image-size", size: 24},
             icon: "photo_size_select_small",
@@ -165,7 +165,7 @@ function view({palette}, config, initialLoading, imageBlob) {
             tooltip: "Size: large (64x64)"
           })
         ]),
-        h("div.nav__group", {}, [
+        h("div.nav__group.nav__group--l", {}, [
           IconButton({
             data: {action: "set-background", background: null},
             icon: "panorama_fish_eye",
@@ -179,7 +179,7 @@ function view({palette}, config, initialLoading, imageBlob) {
             tooltip: "Background: white"
           })
         ]),
-        h("div.nav__group", {}, [
+        h("div.nav__group.nav__group--l", {}, [
           IconButton({
             data: {action: "set-padding", padding: false},
             icon: "grid_off",
@@ -193,6 +193,12 @@ function view({palette}, config, initialLoading, imageBlob) {
             tooltip: "Spacing between emoji: on"
           })
         ]),
+        IconButton({
+          sel: "button",
+          icon: "settings",
+          props: {cls: {".nav__btn--hamburger": true}},
+          tooltip: "Download"
+        }),
         IconButton({
           sel: "a",
           icon: "file_download",

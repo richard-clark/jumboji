@@ -41,6 +41,12 @@
     padding-left: 50px;
     padding-right: 50px;
     width: 100%;
+
+    @media (max-width: 600px) {
+      & {
+        max-width: 700px;
+      }
+    }
   }
 
   .nav__input {
@@ -50,4 +56,52 @@
   .nav__group {
     display: flex;
   }
+
+  @media (max-width: 600px) {
+    .nav__group--l {
+      display: none;
+    }
+  }
+
+
+
+  // .nav__inner {
+  //   background-color: black;
+  //   flex-direction: column;
+  //   position: absolute;
+  //   z-index: 30;
+  //   top: 50%;
+  //   transform: translateY(-50%);
+  //
+  //   & > *,
+  //   & > .tooltip-container.tooltip-container {
+  //     display: none;
+  //   }
+  //
+  //   .nav__group--l {
+  //     display: block;
+  //     padding: 10px;
+  //     width: 100%;
+  //   }
+  //
+  //   .tooltip-container {
+  //     align-items: center;
+  //     display: flex;
+  //
+  //     .tooltip-container__tooltip {
+  //       background: none;
+  //       color: inherit;
+  //       display: block;
+  //       font-size: inherit;
+  //       margin: 0;
+  //       padding: 0;
+  //       position: static;
+  //       transform: none;
+  //     }
+  //   }
+  // }
+
+
+
+
 }

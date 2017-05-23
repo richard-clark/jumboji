@@ -11,6 +11,11 @@
   padding: 10px;
   text-align: center;
   width: 100%;
+  transition: font-size 0.5s ease-in-out;
+
+  @media (max-width: 650px) {
+    font-size: 18px;
+  }
 
   &::placeholder {
     color: #aaa;

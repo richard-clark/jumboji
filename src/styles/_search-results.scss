@@ -3,15 +3,18 @@
 .search-results {
   display: flex;
   flex-wrap: wrap;
-  height: 200px;
   align-content: flex-start;
   box-shadow: 1px 1px 3px #888 inset;
   border: 1px solid #888;
-  background: #fff;
+  background: $white;
   border-radius: 5px;
   margin-top: 5px;
   padding: 10px;
   position: relative;
+
+  @media (max-width: 650px) {
+    height: 6 * 60px + 20px;
+  }
 
   .search-results__empty-state-btn {
     @include fill-parent;
@@ -25,10 +28,20 @@
     height: 60px;
     line-height: 1;
     width: calc(100% / 10);
-    transition: transform 0.15s ease-in-out;
+    transition: transform 0.15s ease-in-out,
+      font-size 0.5s ease-in-out,
+      width 0.5s ease-in-out;
 
     &:hover {
       transform: scale(1.33);
+    }
+
+    @media (max-width: 650px) {
+      width: calc(100% / 5);
+    }
+
+    @media (max-width: 450px) {
+      font-size: 30px;
     }
   }
 
@@ -39,6 +52,14 @@
     height: 60px;
     width: calc(100% / 10);
     justify-content: center;
+
+    @media (max-width: 650px) {
+      width: calc(100% / 5);
+    }
+
+    @media (max-width: 450px) {
+      font-size: 0.85em;
+    }
   }
 
 }

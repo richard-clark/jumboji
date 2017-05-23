@@ -6,6 +6,7 @@ body {
   overflow: hidden;
 }
 
+button,
 input {
   // Newer emoji aren't displayed correctly if this isn't set.
   // (For example, Chrome displays "✈" instead of ✈️)
