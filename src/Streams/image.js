@@ -52,7 +52,8 @@ function* clearAndRender(dataToRender, appearance, config, previousConfig) {
   } else {
     const sizeChanged = previousConfig
       && (config.tileSize !== previousConfig.tileSize
-          || config.imageSize !== previousConfig.imageSize);
+          || config.imageSize !== previousConfig.imageSize
+          || config.sampleNeighbors !== previousConfig.sampleNeighbors);
     if (!sizeChanged) {
       yield renderImage(dataToRender.data, appearance, config);
     }

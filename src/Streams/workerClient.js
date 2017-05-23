@@ -16,7 +16,7 @@ function generateDataToRender(appearanceData, config) {
   return {
     appearanceData,
     pixelData,
-    maxVariation: config.maxVariation
+    sampleNeighbors: config.sampleNeighbors
   };
 }
 

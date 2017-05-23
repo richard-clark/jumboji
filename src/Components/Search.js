@@ -6,9 +6,7 @@ function getRandomEmoji(possibleEmoji) {
   return possibleEmoji[utils.rand(possibleEmoji.length)];
 }
 
-function EmptyStateButton(possibleEmoji) {
-  const emoji = getRandomEmoji(possibleEmoji);
-
+function EmptyStateButton(emoji) {
   return h("button.search-results__empty-state-btn", {
     dataset: {trigger: "search-result", emoji}
   }, emoji);
@@ -16,6 +14,8 @@ function EmptyStateButton(possibleEmoji) {
 
 const ALL_THE_DETECTIVES = ["🕵🏽‍♀️", "🕵🏿‍♂️", "🕵🏼‍♀️", "🕵🏻‍♂️", "🕵🏾‍♀️", "🕵🏿‍♀️", "🕵🏽‍♂️", "🕵🏾‍♂️", "🕵🏻‍♀️", "🕵🏼‍♂️"];
 const ALL_PEOPLE_SHRUGGING = ["🤷🏾‍♂️", "🤷🏻‍♀️", "🤷🏼‍♀️", "🤷🏾‍♀️", "🤷🏽‍♂️", "🤷🏿‍♂️", "🤷🏽‍♀️", "🤷🏻‍♂️", "🤷🏼‍♂️"];
+const detective = getRandomEmoji(ALL_THE_DETECTIVES);
+const personShrugging = getRandomEmoji(ALL_PEOPLE_SHRUGGING);
 
 function dom(results, {show, query}) {
 
@@ -36,9 +36,9 @@ function dom(results, {show, query}) {
 
   let emptyState = "";
   if (!results.hasData) {
-    emptyState = EmptyStateButton(ALL_THE_DETECTIVES);
+    emptyState = EmptyStateButton(detective);
   } else if (results.totalResults === 0) {
-    emptyState = EmptyStateButton(ALL_PEOPLE_SHRUGGING);
+    emptyState = EmptyStateButton(personShrugging);
   }
 
   const modal = h("div.modal-container__modal", {}, [

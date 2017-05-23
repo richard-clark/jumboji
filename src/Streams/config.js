@@ -2,16 +2,17 @@ import * as utils from "../utils.js";
 import * as most from "most";
 
 export const INITIAL_CONFIG = {
-  emoji: "🌈",
+  // emoji: "🌈",
   fullSize: false,
   imageSize: 24,
   tileSize: 32,
-  maxVariation: 0.9,
+  sampleNeighbors: 5,
   padding: false,
   background: null
 };
 
 function actionReducer(state, event) {
+  console.log("event", event);
   switch (event.action) {
     case "set-background":
       return {...state, background: event.background};
@@ -25,6 +26,8 @@ function actionReducer(state, event) {
       return {...state, fullSize: !state.fullSize};
     case "set-padding":
       return {...state, padding: Boolean(event.padding)};
+    case "set-neighbors":
+      return {...state, sampleNeighbors: parseInt(event.sampleNeighbors)};
     default:
       return state;
   }

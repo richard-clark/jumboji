@@ -38,6 +38,10 @@ export function configToPath(config, emojiToNameMap) {
     components.push(`bg-${background}`)
   }
 
+  if (config.sampleNeighbors !== INITIAL_CONFIG.sampleNeighbors) {
+    components.push(`n-${config.sampleNeighbors}`);
+  }
+
   if (config.padding) {
     components.push("padding");
   }
@@ -66,6 +70,11 @@ export function pathToEvents(path, emojiToNameMap) {
         continue;
       } else {
         console.log("warning, no emoji at first position");
+        actions.push({
+          action: "set-emoji",
+          emoji: "🌈"
+        });
+        continue;
       }
     }
 
@@ -91,6 +100,17 @@ export function pathToEvents(path, emojiToNameMap) {
       actions.push({
         action: "set-background",
         background: `#${match[1]}`
+      });
+      continue;
+    }
+
+    match = option.match(/^n-(\d{1,2})$/);
+    if (match) {
+      const neighbors = parseInt(match[1]);
+      console.log("neighbors", neighbors);
+      actions.push({
+        action: "set-neighbors",
+        sampleNeighbors: neighbors
       });
       continue;
     }
@@ -135,6 +155,10 @@ export function makeInterface({data$}) {
     )
     .debounce(1000)
     .observe(({config, emojiToNameMap}) => {
+      if (!config.emoji) {
+        console.log("no emoji in config, skipping route update");
+        return;
+      }
       const path = configToPath(config, emojiToNameMap);
       if (path === history.location.pathname) {
         return;
