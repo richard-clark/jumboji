@@ -51,10 +51,7 @@ export function configToPath(config, emojiToNameMap) {
 }
 
 export function pathToEvents(path, emojiToNameMap) {
-  console.log("pathToEvents", path);
-
   const options = path.slice(2).split("/").reverse();
-  console.log(options);
   const actions = [];
 
   for (let index = 0; index < options.length; index++) {
@@ -103,7 +100,6 @@ export function pathToEvents(path, emojiToNameMap) {
     match = option.match(/^n-(\d{1,2})$/);
     if (match) {
       const neighbors = parseInt(match[1]);
-      console.log("neighbors", neighbors);
       actions.push({
         action: "set-neighbors",
         sampleNeighbors: neighbors
@@ -161,8 +157,6 @@ export function makeInterface({data$}) {
     )
     .observe(({config, emojiToNameMap}) => {
       if (!config.emoji) {
-        console.log(config);
-        console.log("no emoji in config, skipping route update");
         return;
       }
       const path = "#" + configToPath(config, emojiToNameMap);

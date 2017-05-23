@@ -36,7 +36,6 @@ export function SearchAction$({clickWithDataTarget$}) {
 export function SearchParams$({clickWithDataTarget$, searchAction$}) {
 
   const searchInput$ = most.fromEvent("input", document)
-    .tap((event) => console.log(event.target))
     .filter((event) => event.target.classList.contains("search-input"))
     .map((event) => event.target.value)
     .map((query) => ({query}));
@@ -59,7 +58,6 @@ export function SearchParams$({clickWithDataTarget$, searchAction$}) {
   return most.merge(searchInput$, searchClose$, searchOpen$)
     .scan((params, delta) => ({...params, ...delta}), INITIAL_SEARCH_PARAMS)
     .startWith(INITIAL_SEARCH_PARAMS)
-    .tap((params) => console.log("params", params))
     .multicast();
 
 }

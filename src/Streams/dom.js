@@ -18,7 +18,5 @@ export function ClickWithDataTarget$() {
   return most.fromEvent("click", document, true)
     .map(getDataTarget)
     .filter((target) => target)
-    // .tap((event) => event.preventDefault)
-    .tap(() => console.log("click"))
     .multicast();
 }

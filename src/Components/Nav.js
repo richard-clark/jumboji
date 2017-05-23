@@ -1,6 +1,7 @@
 import {h} from "snabbdom/h";
 import * as most from "most";
 import convert from "color-convert";
+import {getMenuConfig} from "./menu.js";
 
 function TooltipContainer({tooltip, tooltipAlignRight, trigger}) {
 
@@ -94,6 +95,14 @@ function ImageBlob$({image$}) {
 
 }
 
+function menuConfigToToolbarElements(menuConfig) {
+  return menuConfig.map((group) => {
+    return h("div.nav__group.nav__group--l", {},
+      group.map(IconButton)
+    );
+  })
+}
+
 function view({palette}, config, initialLoading, imageBlob) {
 
   const navStyle = getNavStyle(palette);
@@ -110,6 +119,9 @@ function view({palette}, config, initialLoading, imageBlob) {
       style: ""
     };
   }
+
+  const menuConfig = getMenuConfig(config);
+  const toolbarElements = menuConfigToToolbarElements(menuConfig);
 
   const vnode = h(`nav`,
     {
@@ -145,66 +157,21 @@ function view({palette}, config, initialLoading, imageBlob) {
             tooltipAlignRight: true
           })
         ]),
-        h("div.nav__group.nav__group--l", {}, [
+        ...toolbarElements,
+        h("div.nav__group", {}, [
           IconButton({
-            data: {action: "set-image-size", size: 24},
-            icon: "photo_size_select_small",
-            selected: config.imageSize === 24,
-            tooltip: "Size: small (24x24)"
+            sel: "button",
+            icon: "settings",
+            data: {trigger: "show-settings-menu"},
+            tooltip: "Settings"
           }),
           IconButton({
-            data: {action: "set-image-size", size: 32},
-            icon: "photo_size_select_large",
-            selected: config.imageSize === 32,
-            tooltip: "Size: medium (32x32)"
-          }),
-          IconButton({
-            data: {action: "set-image-size", size: 64},
-            icon: "photo_size_select_actual",
-            selected: config.imageSize === 64,
-            tooltip: "Size: large (64x64)"
+            sel: "a",
+            icon: "file_download",
+            props: downloadButtonProps,
+            tooltip: "Download"
           })
-        ]),
-        h("div.nav__group.nav__group--l", {}, [
-          IconButton({
-            data: {action: "set-background", background: null},
-            icon: "panorama_fish_eye",
-            selected: !config.background,
-            tooltip: "Background: transparent"
-          }),
-          IconButton({
-            data: {action: "set-background", background: "#ffffff"},
-            icon: "lens",
-            selected: config.background === "#ffffff",
-            tooltip: "Background: white"
-          })
-        ]),
-        h("div.nav__group.nav__group--l", {}, [
-          IconButton({
-            data: {action: "set-padding", padding: false},
-            icon: "grid_off",
-            selected: !config.padding,
-            tooltip: "Spacing between emoji: off"
-          }),
-          IconButton({
-            data: {action: "set-padding", padding: true},
-            icon: "grid_on",
-            selected: config.padding,
-            tooltip: "Spacing between emoji: on"
-          })
-        ]),
-        IconButton({
-          sel: "button",
-          icon: "settings",
-          props: {cls: {".nav__btn--hamburger": true}},
-          tooltip: "Download"
-        }),
-        IconButton({
-          sel: "a",
-          icon: "file_download",
-          props: downloadButtonProps,
-          tooltip: "Download"
-        })
+        ])
       ])
     ]);
 

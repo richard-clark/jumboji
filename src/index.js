@@ -11,6 +11,7 @@ import Img from "./Components/Img.js";
 import Loader from "./Components/Loader.js";
 import Nav from "./Components/Nav.js";
 import Search from "./Components/Search.js";
+import Settings from "./Components/Settings.js";
 import {h} from "snabbdom/h";
 import domSink from "./domSink.js";
 import * as routerUtils from "./routerUtils.js";
@@ -80,15 +81,37 @@ let loader = Loader({ loading$ });
 
 let search = Search({ dataMatchingSearch$, searchParams$ });
 
-function main(navVnode, imgVnode, loaderVnode, searchVnode) {
+const settingsMenuVisible$ = most.merge(
+
+  most.fromEvent("keyup", document)
+    .filter((event) => event.keyCode === 27)
+    .map(() => false),
+
+  routerInterface.stateAction$
+    .map(() => false),
+
+  clickWithDataTarget$
+    .filter(({trigger}) => trigger === "close-settings-menu")
+    .map(() => false),
+
+  clickWithDataTarget$
+    .filter(({trigger}) => trigger === "show-settings-menu")
+    .map(() => true)
+
+).startWith(false).multicast();
+
+let settings = Settings({config$, settingsMenuVisible$});
+
+function main(navVnode, imgVnode, loaderVnode, searchVnode, settingsVnode) {
   return h("main.main", {key: "main"}, [
     navVnode,
     imgVnode,
     loaderVnode,
-    searchVnode
+    searchVnode,
+    settingsVnode
   ])
 }
 
-let dom$ = most.combine(main, nav.dom$, img.dom$, loader.dom$, search.dom$);
+let dom$ = most.combine(main, nav.dom$, img.dom$, loader.dom$, search.dom$, settings.dom$);
 
 domSink({dom$, documentReady$});
