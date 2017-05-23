@@ -1,6 +1,8 @@
-# 2048
+# Jumboji
 
-## Instructions
+A web application for generating large, emoji versions of... other emoji.
+
+## Development
 
 1. [Install Yarn](https://yarnpkg.com/en/docs/install).
 
@@ -10,26 +12,20 @@
 yarn
 ```
 
-3. Start dev server:
+3. Start the Webpack development server:
 
 ```shell
-./node_modules/.bin/webpack-dev-server
+./node_modules/.bin/webpack-dev-server --env dev
 ```
 
-To build for production, run:
+## Building
+
+For compatibility with GitHub, production assets are stored in the `docs/` directory. The compiled files in this directory should be committed to the repository.
+
+To compile (after following the steps in Developing), run:
 
 ```
-./node_modules/.bin/webpack -p
+./node_modules/.bin/webpack -p --env prod
 ```
 
-(CSS styles are applied by `bundle.js`). `dist/` can then be served by any HTTP server.
-
-## snabbdom
-
-Apparently if a class changes on a vnode, that vnode will be removed and replaced. To change classes on a vnode while persisting that node, you apparently have to use the `classes` module.
-
-See [this issue](https://github.com/snabbdom/snabbdom/issues/106).
-
-## credits
-
-Loader is from here: https://github.com/webpack-contrib/css-loader
+(Note that CSS styles are applied by `bundle.js`.)
