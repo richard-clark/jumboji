@@ -1,10 +1,14 @@
 const path = require("path");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
+
+const isProduction = process.env.NODE_ENV === "production";
+console.log(isProduction);
 
 module.exports = {
   devServer: {
-    contentBase: path.join(__dirname, "dist"),
+    contentBase: path.join(__dirname, "docs"),
     compress: true,
     port: 9000,
     hot: true,
@@ -51,12 +55,16 @@ module.exports = {
 
   output: {
     filename: "bundle.js",
-    path: __dirname + "/dist",
-    publicPath: "/jumboji/"
+    path: __dirname + "/docs",
+    publicPath: isProduction ? "/jumboji/" : "/"
   },
 
   plugins: [
-    new HtmlWebpackPlugin(),
+    new FaviconsWebpackPlugin("./favicon.png"),
+    new HtmlWebpackPlugin({
+      baseUrl: isProduction ? "/jumboji/" : "/",
+      title: "Jumboji 🕺🏽"
+    }),
     new webpack.HotModuleReplacementPlugin()
   ]
 };
