@@ -20,31 +20,33 @@ function unsupportedModalView(unsupportedInfo) {
 
 export default function GenericModal$({allData$, appearanceData$, clickWithDataTarget$}) {
 
-  const unsupportedInfo$ = most.combine(
-    (data, appearanceData) => ({
-      totalCount: data.length,
-      unsupportedCount: data.filter((point) => !appearanceData.data[point.num].supported).length
-    }),
-    allData$,
-    appearanceData$
-  )
-    .startWith({totalCount: 0, unsupportedCount: 0})
-    .multicast();
+  // const unsupportedInfo$ = most.combine(
+  //   (data, appearanceData) => ({
+  //     totalCount: data.length,
+  //     unsupportedCount: data.filter((point) => !appearanceData.data[point.num].supported).length
+  //   }),
+  //   allData$,
+  //   appearanceData$
+  // )
+  //   .startWith({totalCount: 0, unsupportedCount: 0})
+  //   .multicast();
+  //
+  // const showUnsupportedModal$ = unsupportedInfo$
+  //   .filter(({unsupportedCount}) => unsupportedCount > 0)
+  //   .take(1)
+  //   .map((unsupportedInfo) => ({
+  //     type: "show",
+  //     id: "unsupported",
+  //     dom: unsupportedModalView(unsupportedInfo)
+  //   }));
+  //
+  // const hideModal$ = clickWithDataTarget$
+  //   .filter(({trigger}) => trigger === "close-generic-modal")
+  //   .map(({id}) => ({type: "hide", id}))
+  //   .tap((ev) => console.log("hide modal", ev));
+  //
+  // return most.merge(showUnsupportedModal$, hideModal$);
 
-  const showUnsupportedModal$ = unsupportedInfo$
-    .filter(({unsupportedCount}) => unsupportedCount > 0)
-    .take(1)
-    .map((unsupportedInfo) => ({
-      type: "show",
-      id: "unsupported",
-      dom: unsupportedModalView(unsupportedInfo)
-    }));
-
-  const hideModal$ = clickWithDataTarget$
-    .filter(({trigger}) => trigger === "close-generic-modal")
-    .map(({id}) => ({type: "hide", id}))
-    .tap((ev) => console.log("hide modal", ev));
-
-  return most.merge(showUnsupportedModal$, hideModal$);
+  return most.empty()
 
 }

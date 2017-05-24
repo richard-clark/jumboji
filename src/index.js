@@ -49,7 +49,8 @@ const config$ = Config$({
   data$,
   clickWithDataTarget$,
   initialConfig$: routerInterface.initialConfig$,
-  stateAction$: routerInterface.stateAction$
+  stateAction$: routerInterface.stateAction$,
+  searchAction$
 });
 routerInterface.observe(config$);
 

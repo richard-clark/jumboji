@@ -65,7 +65,11 @@ export default function Config$({
     data$,
     clickWithDataTarget$
       .filter(({trigger}) => trigger === "randomize")
-  );
+  ).multicast();
+
+  // For some reason, randomizeAction$ events only show up in config$ if this
+  // is set.
+  randomizeAction$.observe((ev) => console.log(ev));
 
   const _searchAction$ = clickWithDataTarget$
     .filter(({trigger}) => trigger === "search-result")
@@ -75,7 +79,7 @@ export default function Config$({
   const config$ = initialConfig$
     .take(1)
     .continueWith((initialConfig) => {
-      return most.merge(stateAction$, clickAction$, randomizeAction$, _searchAction$)
+      return most.merge(stateAction$, clickAction$, _searchAction$, randomizeAction$)
         .scan(actionReducer, initialConfig);
     })
     .skipRepeatsWith(objectsAreEqual)

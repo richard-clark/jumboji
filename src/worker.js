@@ -48,7 +48,7 @@ function* process(appearanceData, pixelData, sampleNeighbors) {
 
   yield { loading: true };
 
-  const emojiData = Object.values(appearanceData.data);
+  const emojiData = Object.values(appearanceData.data).filter((value) => value.supported);
   const data = getEmojiForPixelData(emojiData, pixelData, sampleNeighbors);
   const palette = getColorPalette(pixelData);
 

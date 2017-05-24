@@ -44,9 +44,9 @@ function getTextMetrics() {
   context.font = `${fontSize}px sans-serif`;
   const x = width / 4;
   const y = height / 2;
-  // context.fillText("⬛", x, y);
+  context.fillText("⬛", x, y);
   // context.fillText("🔵", x, y);
-  context.fillText("🏞️", x, y);
+  // context.fillText("🏞️", x, y);
   const bounds = getOpaqueBoundingBox(context, width, height);
   canvas.remove();
 
@@ -207,10 +207,10 @@ export function getData(data) {
     const infoForPoint = info[index];
     const supported = infoForPoint.hash !== missingGlyphHash && infoForPoint.width < 1.2;
 
-    if (!supported) {
-      console.log("NOT SUPPORTED!");
-      console.log(getChar(point));
-    }
+    // if (!supported) {
+    //   console.log("NOT SUPPORTED!");
+    //   console.log(getChar(point), infoForPoint.hash !== missingGlyphHash, infoForPoint.width);
+    // }
 
     map[point.num] = {
       char: getChar(point),
