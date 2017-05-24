@@ -8,10 +8,11 @@ module.exports = function(env) {
     throw new Error("You must specify an environment (dev/prod) with '--env prod'");
   }
   const isProduction = env === "prod";
+  const buildDir = isProduction ? "docs" : "dist";
 
   return {
     devServer: {
-      contentBase: path.join(__dirname, "docs"),
+      contentBase: path.join(__dirname, buildDir),
       compress: true,
       port: 9000,
       hot: true,
@@ -58,7 +59,7 @@ module.exports = function(env) {
 
     output: {
       filename: "bundle.js",
-      path: __dirname + "/docs",
+      path: __dirname + `/${buildDir}`,
       publicPath: isProduction ? "/jumboji/" : "/"
     },
 

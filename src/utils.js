@@ -144,28 +144,44 @@ function getPixelData(context, width, height) {
   });
 }
 
-function getAvgColor(context, xOffset, yOffset, char, size=16) {
+function drawCharAndGetData(context, xOffset, yOffset, char, size=16) {
   context.clearRect(0, 0, size, size);
   context.fillText(char, -size * xOffset, size - size * yOffset);
   const pixelData = getPixelData(context, size, size);
+  return pixelData;
+}
+
+function getAvgColor(pixelData) {
   return pixelData.reduce(([a1, b1, c1], {color}) => {
     const [a2, b2, c2] = color;
     return [a1+a2, b1+b2, c1+c2];
   }, [0, 0, 0]).map((v) => v / pixelData.length);
 }
 
-function getColorData(data, metrics) {
-  const SIZE = 16;
+function getHash(pixelData) {
+  return pixelData.map(({rgbColor}) =>
+    [rgbColor.r, rgbColor.g, rgbColor.b].map((byte) =>
+      String.fromCodePoint(Math.floor(byte))).join("")
+  )
+    .join("");
+}
+
+function getInfo(data, metrics) {
+  const SIZE = 8;
   const canvas = createCanvas(SIZE, SIZE);
   const context = canvas.getContext("2d");
   const fontSize = Math.round(SIZE / metrics.actualHeightRatio * 100) / 100;
   context.font = `${fontSize}px sans-serif`;
-  const colorData = data.map((point) => {
+  const info = data.map((point) => {
     const char = getChar(point);
-    return getAvgColor(context, metrics.xOffset, metrics.yOffset, char, SIZE);
+    const pixelData = drawCharAndGetData(context, metrics.xOffset, metrics.yOffset, char, SIZE);
+    const hash = getHash(pixelData);
+    const color = getAvgColor(pixelData);
+    const width = context.measureText(char).width / SIZE;
+    return {color, hash, width};
   });
   canvas.remove();
-  return colorData;
+  return info;
 }
 
 export function getPixelDataForChar(char, metrics, size) {
@@ -181,13 +197,25 @@ export function getPixelDataForChar(char, metrics, size) {
 
 export function getData(data) {
   const metrics = getTextMetrics();
-  const colorData = getColorData(data, metrics);
+  const info = getInfo(data, metrics);
+
+  const missingGlyphPixelData = getPixelDataForChar(String.fromCodePoint(0x124AB), metrics, 8);
+  const missingGlyphHash = getHash(missingGlyphPixelData);
 
   const dataMap = data.reduce((map, point, index) => {
+
+    const infoForPoint = info[index];
+    const supported = infoForPoint.hash !== missingGlyphHash && infoForPoint.width < 1.2;
+
+    if (!supported) {
+      console.log("NOT SUPPORTED!");
+      console.log(getChar(point));
+    }
+
     map[point.num] = {
       char: getChar(point),
-      color: colorData[index],
-      supported: true // TODO: implement this
+      color: infoForPoint.color,
+      supported: supported
     };
     return map;
   }, {});

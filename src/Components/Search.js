@@ -48,7 +48,7 @@ function dom(results, {show, query}) {
       }, h("i.material-icons", {}, "close")),
       h("input.input.search-input", {
         props: {
-          placeholder: `Search for something ${getRandomEmoji(ALL_THE_DETECTIVES)}`,
+          placeholder: `Search for something ${detective}`,
           value: query
         }
       })

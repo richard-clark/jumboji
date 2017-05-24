@@ -6,7 +6,9 @@ import Data$ from "./Streams/data.js";
 import Image$ from "./Streams/image.js";
 import {DataMatchingSearch$, SearchAction$, SearchParams$} from "./Streams/search.js";
 import WorkerClient$ from "./Streams/workerClient.js";
+import GenericModal$ from "./Streams/genericModal.js";
 import {DocumentReady$, ClickWithDataTarget$} from "./Streams/dom.js";
+import GenericModal from "./Components/GenericModal.js";
 import Img from "./Components/Img.js";
 import Loader from "./Components/Loader.js";
 import Nav from "./Components/Nav.js";
@@ -16,14 +18,25 @@ import {h} from "snabbdom/h";
 import domSink from "./domSink.js";
 import * as routerUtils from "./routerUtils.js";
 
-const data$ = Data$({});
+const allData$ = Data$({});
+
+function filterUnsupported(data, appearanceData) {
+  return data.filter((point) => appearanceData.data[point.num].supported);
+}
+
+const documentReady$ = DocumentReady$();
+
+const appearanceData$ = most.combine(utils.getData, allData$, documentReady$)
+  .multicast();
+
+const data$ = most.combine(filterUnsupported, allData$, appearanceData$)
+  .multicast();
 
 const routerInterface = routerUtils.makeInterface({data$});
 
-const documentReady$ = DocumentReady$();
 const clickWithDataTarget$ = ClickWithDataTarget$();
 
-const appearanceData$ = most.combine(utils.getData, data$, documentReady$);
+const genericModal$ = GenericModal$({allData$, appearanceData$, clickWithDataTarget$});
 
 const searchAction$ = SearchAction$({clickWithDataTarget$});
 const searchParams$ = SearchParams$({clickWithDataTarget$, searchAction$});
@@ -102,16 +115,19 @@ const settingsMenuVisible$ = most.merge(
 
 let settings = Settings({config$, settingsMenuVisible$});
 
-function main(navVnode, imgVnode, loaderVnode, searchVnode, settingsVnode) {
+let genericModal = GenericModal({genericModal$});
+
+function main(navVnode, imgVnode, loaderVnode, searchVnode, settingsVnode, genericModalVnode) {
   return h("main.main", {key: "main"}, [
     navVnode,
     imgVnode,
     loaderVnode,
     searchVnode,
-    settingsVnode
+    settingsVnode,
+    genericModalVnode
   ])
 }
 
-let dom$ = most.combine(main, nav.dom$, img.dom$, loader.dom$, search.dom$, settings.dom$);
+let dom$ = most.combine(main, nav.dom$, img.dom$, loader.dom$, search.dom$, settings.dom$, genericModal.dom$);
 
 domSink({dom$, documentReady$});
