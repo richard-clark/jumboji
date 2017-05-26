@@ -214,22 +214,36 @@ export function getPixelDataForChar(char, metrics, size) {
   return pixelData;
 }
 
+// For each OS, each emoji has different widths and each missing glyph has
+// different widths. Thus, we have to try to detect the OS and set this
+// appropriately. 
+function getMaxCharWidth() {
+  const userAgent = window.navigator.userAgent;
+
+  if (userAgent.match(/Android/)) {
+    return 1.1;
+  } else if (userAgent.match(/Windows/)) {
+    return 1.5;
+  } else {
+    // Assume macOS
+    return 1.2
+  }
+
+}
+
 export function getData(data) {
   const metrics = getTextMetrics();
   const info = getInfo(data, metrics);
 
   const missingGlyphPixelData = getPixelDataForChar(String.fromCodePoint(0x124AB), metrics, 8);
   const missingGlyphHash = getHash(missingGlyphPixelData);
+  const MAX_CHAR_WIDTH = getMaxCharWidth();
+  console.log(window.navigator.userAgent, MAX_CHAR_WIDTH);
 
   const dataMap = data.reduce((map, point, index) => {
 
     const infoForPoint = info[index];
-    // For macOS (square emoji), 1.2 would be valid, but Windows has wider emoji
-    // so a minimum of 1.5 is required to prevent valid emoji from being filered
-    // out
-    //
-    // BUG: this doesn't work on Android devices (missing emoji are very narrow)
-    const supported = infoForPoint.hash !== missingGlyphHash && infoForPoint.width < 1.5;
+    const supported = infoForPoint.hash !== missingGlyphHash && infoForPoint.width < MAX_CHAR_WIDTH;
 
     map[point.num] = {
       char: getChar(point),
