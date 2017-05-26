@@ -66,7 +66,8 @@ module.exports = function(env) {
       new FaviconsWebpackPlugin("./favicon.png"),
       new HtmlWebpackPlugin({
         baseUrl: isProduction ? "/jumboji/" : "/",
-        title: "Jumboji [beta]"
+        title: "Jumboji [beta]",
+        template: "./template.html"
       }),
       new webpack.HotModuleReplacementPlugin()
     ]

@@ -227,6 +227,8 @@ export function getData(data) {
     // For macOS (square emoji), 1.2 would be valid, but Windows has wider emoji
     // so a minimum of 1.5 is required to prevent valid emoji from being filered
     // out
+    //
+    // BUG: this doesn't work on Android devices (missing emoji are very narrow)
     const supported = infoForPoint.hash !== missingGlyphHash && infoForPoint.width < 1.5;
 
     map[point.num] = {
