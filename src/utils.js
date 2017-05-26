@@ -1,5 +1,14 @@
 import convert from "color-convert";
 
+function getBiggestBoundingBox(bounds, {minX, minY, maxX, maxY}) {
+  return {
+    minX: Math.min(bounds.minX, minX),
+    maxX: Math.max(bounds.maxX, maxX),
+    minY: Math.min(bounds.minY, minY),
+    maxY: Math.max(bounds.maxY, maxY)
+  };
+}
+
 export function getOpaqueBoundingBox(context, width, height) {
   const imageData = context.getImageData(0, 0, width, height).data;
   const bounds = Array(width * height).fill(0).map((_, index) => {
@@ -30,7 +39,6 @@ export function createCanvas(width, height) {
   canvas.height = height;
   canvas.style.width = `${width / 2}px`;
   canvas.style.height = `${height / 2}px`;
-  // canvas.style.border = "1px solid red";
   document.body.appendChild(canvas);
   return canvas;
 }
@@ -44,10 +52,21 @@ function getTextMetrics() {
   context.font = `${fontSize}px sans-serif`;
   const x = width / 4;
   const y = height / 2;
-  context.fillText("⬛", x, y);
-  // context.fillText("🔵", x, y);
-  // context.fillText("🏞️", x, y);
-  const bounds = getOpaqueBoundingBox(context, width, height);
+
+  // Different emoji have different bounds on different OSes, so get the bounds
+  // of a couple different emoji and use the largest bounding box.
+  const bounds = [
+    "⬛", // macOS
+    "🔗", // macOS
+    "🌈" // windows
+  ].map((char, index) => {
+    if (index > 0) {
+      context.clearRect(0, 0, width, height);
+    }
+    context.fillText("😍", x, y);
+    return getOpaqueBoundingBox(context, width, height);
+  }).reduce(getBiggestBoundingBox);
+
   canvas.remove();
 
   const actualHeightRatio = (bounds.maxY - bounds.minY) / fontSize;
@@ -205,12 +224,10 @@ export function getData(data) {
   const dataMap = data.reduce((map, point, index) => {
 
     const infoForPoint = info[index];
-    const supported = infoForPoint.hash !== missingGlyphHash && infoForPoint.width < 1.2;
-
-    // if (!supported) {
-    //   console.log("NOT SUPPORTED!");
-    //   console.log(getChar(point), infoForPoint.hash !== missingGlyphHash, infoForPoint.width);
-    // }
+    // For macOS (square emoji), 1.2 would be valid, but Windows has wider emoji
+    // so a minimum of 1.5 is required to prevent valid emoji from being filered
+    // out
+    const supported = infoForPoint.hash !== missingGlyphHash && infoForPoint.width < 1.5;
 
     map[point.num] = {
       char: getChar(point),

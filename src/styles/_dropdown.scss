@@ -67,7 +67,8 @@
       content: none;
     }
 
-    .dropdown__content {
+    .dropdown__content,
+    &.dropdown--search-dropdown .dropdown__content {
       padding: 15px 30px;
       height: 100vh;
       margin-top: 0;
