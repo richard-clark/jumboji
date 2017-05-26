@@ -1,21 +1,14 @@
 @import "./variables.scss";
 
 .input {
-  background: $white;
-  border-radius: 5px;
-  border: 1px solid #888;
-  box-shadow: 1px 1px 3px #888 inset;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid $white;
   box-sizing: border-box;
-  color: #111;
-  font-size: 25px;
-  padding: 10px;
-  text-align: center;
+  color: $white;
+  font-size: 1.2em;
+  padding: 10px 0;
   width: 100%;
-  transition: font-size 0.5s ease-in-out;
-
-  @media (max-width: 650px) {
-    font-size: 18px;
-  }
 
   &::placeholder {
     color: #aaa;

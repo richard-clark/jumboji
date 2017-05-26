@@ -1,0 +1,145 @@
+@import "./variables.scss";
+
+.dropdown {
+  position: relative;
+
+  .dropdown__content {
+    background: $black;
+    color: $white;
+    display: none;
+    padding: 15px;
+    position: absolute;
+    font-size: 14px;
+    right: 0;
+    z-index: 30;
+    min-width: 273px;
+    margin-top: 7px;
+    right: -10px;
+
+    &:after {
+      border: 8px solid transparent;
+      border-bottom: 8px solid $black;
+      content: "";
+      display: block;
+      height: 10px;
+      width: 10px;
+      position: absolute;
+      z-index: 40;
+      bottom: 100%;
+      right: 20px;
+    }
+  }
+
+  &.dropdown--pull-right .dropdown__content {
+    left: 0;
+
+    &:after {
+      left: 14px;
+    }
+  }
+
+  .dropdown__content-inner {
+    overflow-y: auto;
+  }
+
+  &--active .dropdown__content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dropdown__close {
+    @include plain-button;
+    color: $white;
+    margin-left: auto;
+  }
+
+}
+
+@media (max-width: 400px) {
+  .dropdown {
+    position: static;
+
+    &:after {
+      content: none;
+    }
+
+    .dropdown__content {
+      padding: 15px 30px;
+      height: 100vh;
+      margin-top: 0;
+      right: 0;
+      top: 0;
+      width: 100%;
+    }
+  }
+}
+
+.dropdown-group {
+  padding: 7px 0;
+  margin: 7px 0;
+
+  &.dropdown-group--no-padding {
+    margin: 0;
+    padding: 0;
+  }
+
+  .dropdown-group__heading + .dropdown-group__content {
+    margin-top: 6px;
+  }
+
+  .dropdown-group__content {
+    display: flex;
+    width: 100%;
+  }
+
+  &.dropdown-group--l,
+  &.dropdown-group--m,
+  &.dropdown-group--s {
+    visibility: hidden;
+    display: none;
+  }
+
+  @media (max-width: 600px) {
+    &.dropdown-group--l {
+      visibility: visible;
+      display: block;
+    }
+  }
+
+  @media (max-width: 550px) {
+    &.dropdown-group--m {
+      visibility: visible;
+      display: block;
+    }
+  }
+
+  @media (max-width: 500px) {
+    &.dropdown-group--s {
+      visibility: visible;
+      display: block;
+    }
+  }
+
+}
+
+.dropdown-btn {
+  @include plain-button;
+  flex-basis: 0;
+  flex-grow: 1;
+  padding: 10px 0;
+  margin: 0 10px;
+  border-bottom: 3px solid transparent;
+
+  .dropdown-btn__text {
+    display: block;
+    white-space: nowrap;
+  }
+
+  .dropdown-btn__icon + .dropdown-btn__text {
+    margin-top: 5px;
+  }
+
+  &.dropdown-btn--selected {
+    border-bottom-color: #eee;
+  }
+}

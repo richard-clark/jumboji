@@ -2,7 +2,12 @@ import {h} from "snabbdom/h";
 import * as most from "most";
 import convert from "color-convert";
 import {getMenuConfig} from "./menu.js";
-import {DropdownContent} from "./dropdown.js";
+import {DropdownContent,
+  DropdownContentFromMenuConfig,
+  Dropdown,
+  DropdownToggle
+} from "./dropdown.js";
+import Search from "./Search.js";
 
 function TooltipContainer({tooltip, tooltipAlignRight, trigger}) {
 
@@ -104,7 +109,28 @@ function menuConfigToToolbarElements(menuConfig) {
   })
 }
 
-function view({palette}, config, initialLoading, imageBlob, settingsMenuVisible) {
+function SearchButton({config}) {
+  const button = h("button", {
+    class: {
+      "search-button": true
+    },
+    dataset: {trigger: "show-serch-modal"}
+  }, h("div.search-button__inner", {}, [
+    h("i.material-icons.search-button__icon", {}, "search"),
+    h("span.search-button__emoji", {}, config.emoji)
+  ]));
+
+  return TooltipContainer({
+    tooltip: "Search...",
+    tooltipAlignRight: true,
+    trigger: DropdownToggle({
+      vnode: button,
+      name: "search"
+    })
+  });
+}
+
+function view({palette}, config, initialLoading, imageBlob, visibleDropdown, searchVnode) {
 
   const navStyle = getNavStyle(palette);
   const style = `background-color:${navStyle.backgroundColor}`;
@@ -138,18 +164,14 @@ function view({palette}, config, initialLoading, imageBlob, settingsMenuVisible)
     }, [
       h("div.nav__inner", {key: "nav-inner"}, [
         h("div.nav__group", {}, [
-          TooltipContainer({
-            tooltip: "Search...",
-            tooltipAlignRight: true,
-            trigger: h("button", {
-              class: {
-                "search-button": true
-              },
-              dataset: {trigger: "show-serch-modal"}
-            }, h("div.search-button__inner", {}, [
-              h("i.material-icons.search-button__icon", {}, "search"),
-              h("span.search-button__emoji", {}, config.emoji)
-            ]))
+          Dropdown({
+            visible: visibleDropdown === "search",
+            name: "search",
+            pullRight: true,
+            children: [
+              SearchButton({config}),
+              searchVnode,
+            ]
           }),
           IconButton({
             icon: "refresh",
@@ -160,22 +182,22 @@ function view({palette}, config, initialLoading, imageBlob, settingsMenuVisible)
         ]),
         ...toolbarElements,
         h("div.nav__group", {}, [
-          h("div.dropdown.nav__item--o-l", {
-            class: {
-              "dropdown--active": settingsMenuVisible
-            }
-          }, [
-            IconButton({
-              sel: "button.dropdown__toggle",
-              icon: "more_vert",
-              data: {trigger: "show-settings-menu"},
-              tooltip: "Settings"
-            }),
-            DropdownContent({
-              menuConfig: menuConfig,
-              closeButtonData: {trigger: "close-settings-menu"}
-            })
-          ]),
+          Dropdown({
+            visible: visibleDropdown === "settings",
+            name: "settings",
+            cls: { "nav__item--o-l": true },
+            children: [
+              DropdownToggle({
+                vnode: IconButton({
+                  sel: "button",
+                  icon: "more_vert",
+                  tooltip: "Settings"
+                }),
+                name: "settings"
+              }),
+              DropdownContentFromMenuConfig({menuConfig})
+            ]
+          }),
           IconButton({
             sel: "a",
             icon: "file_download",
@@ -195,10 +217,14 @@ export default function Nav({
   config$,
   initialLoading$,
   image$,
-  settingsMenuVisible$
+  visibleDropdown$,
+  dataMatchingSearch$,
+  searchParams$
 }) {
 
   const imageBlob$ = ImageBlob$({image$});
+
+  let search = Search({ dataMatchingSearch$, searchParams$ });
 
   const dom$ = most.combine(
     view,
@@ -206,7 +232,8 @@ export default function Nav({
     config$,
     initialLoading$,
     imageBlob$,
-    settingsMenuVisible$
+    visibleDropdown$,
+    search.dom$
   );
 
   return {dom$};

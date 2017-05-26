@@ -4,20 +4,9 @@
   display: flex;
   flex-wrap: wrap;
   align-content: flex-start;
-  box-shadow: 1px 1px 3px #888 inset;
-  border: 1px solid #888;
-  background: $white;
-  border-radius: 5px;
-  margin-top: 5px;
-  padding: 10px;
   position: relative;
 
-  @media (max-width: 650px) {
-    height: 6 * 60px + 20px;
-  }
-
   .search-results__empty-state-btn {
-    // @include fill-parent;
     @include plain-button;
     font-size: 80px;
     margin-left: auto;
@@ -26,24 +15,14 @@
 
   .search-results__result-btn {
     @include plain-button;
-    font-size: 40px;
-    height: 60px;
+    font-size: 35px;
+    height: 50px;
     line-height: 1;
-    width: calc(100% / 10);
-    transition: transform 0.15s ease-in-out,
-      font-size 0.5s ease-in-out,
-      width 0.5s ease-in-out;
+    width: calc(100% / 4);
+    transition: transform 0.15s ease-in-out;
 
     &:hover {
       transform: scale(1.33);
-    }
-
-    @media (max-width: 650px) {
-      width: calc(100% / 5);
-    }
-
-    @media (max-width: 450px) {
-      font-size: 30px;
     }
   }
 
@@ -51,17 +30,9 @@
     align-items: center;
     display: flex;
     color: #aaa;
-    height: 60px;
-    width: calc(100% / 10);
+    height: 50px;
+    width: calc(100% / 4);
     justify-content: center;
-
-    @media (max-width: 650px) {
-      width: calc(100% / 5);
-    }
-
-    @media (max-width: 450px) {
-      font-size: 0.85em;
-    }
   }
 
 }

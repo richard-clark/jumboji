@@ -48,7 +48,7 @@ function getTextMetrics() {
   // context.fillText("🔵", x, y);
   // context.fillText("🏞️", x, y);
   const bounds = getOpaqueBoundingBox(context, width, height);
-  // canvas.remove();
+  canvas.remove();
 
   const actualHeightRatio = (bounds.maxY - bounds.minY) / fontSize;
   const widthToSizeRatio = (bounds.maxX - bounds.minX) / fontSize;

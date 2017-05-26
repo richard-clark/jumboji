@@ -15,7 +15,7 @@ function search(data, searchParams) {
 
   return {
     hasData: data.length > 0,
-    results: results.slice(0, 29).map((point) => ({
+    results: results.slice(0, 19).map((point) => ({
       name: point.name,
       emoji: utils.getChar(point)
     })),
@@ -40,23 +40,12 @@ export function SearchParams$({clickWithDataTarget$, searchAction$}) {
     .map((event) => event.target.value)
     .map((query) => ({query}));
 
-  const searchOpen$ = clickWithDataTarget$
-    .filter(({trigger}) => trigger === "show-serch-modal")
-    .map(() => ({show: true, query: ""}));
-
-  const escButton$ = most.fromEvent("keyup", document)
-    .filter((event) => event.keyCode === 27);
-
-  const searchClose$ = most.merge(searchAction$, escButton$)
-    .map(() => ({show: false}));
-
   const INITIAL_SEARCH_PARAMS = {
     show: false,
     query: ""
   };
 
-  return most.merge(searchInput$, searchClose$, searchOpen$)
-    .scan((params, delta) => ({...params, ...delta}), INITIAL_SEARCH_PARAMS)
+  return searchInput$
     .startWith(INITIAL_SEARCH_PARAMS)
     .multicast();
 

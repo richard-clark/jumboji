@@ -2,22 +2,13 @@ import {h} from "snabbdom/h";
 import * as most from "most";
 import * as utils from "../utils.js";
 
-function getRandomEmoji(possibleEmoji) {
-  return possibleEmoji[utils.rand(possibleEmoji.length)];
-}
-
 function EmptyStateButton(emoji) {
   return h("button.search-results__empty-state-btn", {
     dataset: {trigger: "search-result", emoji}
   }, emoji);
 }
 
-const ALL_THE_DETECTIVES = ["🕵🏽‍♀️", "🕵🏿‍♂️", "🕵🏼‍♀️", "🕵🏻‍♂️", "🕵🏾‍♀️", "🕵🏿‍♀️", "🕵🏽‍♂️", "🕵🏾‍♂️", "🕵🏻‍♀️", "🕵🏼‍♂️"];
-const ALL_PEOPLE_SHRUGGING = ["🤷🏾‍♂️", "🤷🏻‍♀️", "🤷🏼‍♀️", "🤷🏾‍♀️", "🤷🏽‍♂️", "🤷🏿‍♂️", "🤷🏽‍♀️", "🤷🏻‍♂️", "🤷🏼‍♂️"];
-const detective = getRandomEmoji(ALL_THE_DETECTIVES);
-const personShrugging = getRandomEmoji(ALL_PEOPLE_SHRUGGING);
-
-function dom(results, {show, query}) {
+function dom(results, {query}) {
 
   const resultElements = results.results.map((result) => {
     return h("button.search-results__result-btn", {
@@ -27,47 +18,44 @@ function dom(results, {show, query}) {
   });
 
   let moreIndicator = "";
-  if (results.totalResults > 29) {
+  if (results.totalResults > 19) {
     moreIndicator = h("p.search-results__more-indicator",
       {},
-      `+${(results.totalResults-29).toLocaleString()}`
+      `+${(results.totalResults-19).toLocaleString()}`
     );
   }
 
   let emptyState = "";
   if (!results.hasData) {
-    emptyState = EmptyStateButton(detective);
+    emptyState = EmptyStateButton("detective");
   } else if (results.totalResults === 0) {
-    emptyState = EmptyStateButton(personShrugging);
+    emptyState = EmptyStateButton("shrug");
   }
 
-  const modal = h("div.modal-container__modal", {}, [
-    h("div.modal-close-container", {}, [
-      h("button.modal-close-container__btn", {
-        dataset: {trigger: "search-result"}
-      }, h("i.material-icons", {}, "close")),
+  const closeButton = h("button.dropdown__close", {
+    dataset: {trigger: "close-dropdown"}
+  },
+    h("i.material-icons", {}, "close")
+  );
+
+  const modal = h("div.dropdown__content", {}, [
+    closeButton,
+    h("div.dropdown-group.dropdown-group--no-padding", {}, [
       h("input.input.search-input", {
         props: {
-          placeholder: `Search for something ${detective}`,
+          placeholder: `Search for something`,
           value: query
         }
       })
     ]),
-    h("div.search-results", {}, [
+    h("div.dropdown-group.search-results", {}, [
       ...resultElements,
       moreIndicator,
       emptyState
     ])
   ]);
 
-  return h("div.modal-container", {
-    class: {
-      "modal-container--visible": show
-    }
-  }, [
-    h("div.modal-container__overlay", {}),
-    modal
-  ]);
+  return modal;
 
 }
 

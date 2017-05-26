@@ -12,11 +12,10 @@ import GenericModal from "./Components/GenericModal.js";
 import Img from "./Components/Img.js";
 import Loader from "./Components/Loader.js";
 import Nav from "./Components/Nav.js";
-import Search from "./Components/Search.js";
-import Settings from "./Components/Settings.js";
 import {h} from "snabbdom/h";
 import domSink from "./domSink.js";
 import * as routerUtils from "./routerUtils.js";
+import {VisibleDropdown$} from "./Streams/dropdown.js";
 
 const allData$ = Data$({});
 
@@ -86,51 +85,29 @@ const loading$ = most.combine(
 
 let loader = Loader({ loading$ });
 
-let search = Search({ dataMatchingSearch$, searchParams$ });
-
-const settingsMenuVisible$ = most.merge(
-
-  most.fromEvent("keyup", document)
-    .filter((event) => event.keyCode === 27)
-    .map(() => false),
-
-  // routerInterface.stateAction$
-  //   .map(() => false),
-
-  clickWithDataTarget$
-    .filter(({trigger}) => trigger === "close-settings-menu")
-    .map(() => false),
-
-  clickWithDataTarget$
-    .filter(({trigger}) => trigger === "show-settings-menu")
-    .map(() => true)
-
-).startWith(false)
-  .skipRepeats()
-  .multicast();
-
-settingsMenuVisible$.observe((v) => console.log("settings menu visible", v));
+const visibleDropdown$ = VisibleDropdown$({clickWithDataTarget$});
 
 let nav = Nav({
   dataToRender$,
   config$,
   initialLoading$,
   image$,
-  settingsMenuVisible$
+  visibleDropdown$,
+  dataMatchingSearch$,
+  searchParams$
 });
 
 let genericModal = GenericModal({genericModal$});
 
-function main(navVnode, imgVnode, loaderVnode, searchVnode, genericModalVnode) {
+function main(navVnode, imgVnode, loaderVnode, genericModalVnode) {
   return h("main.main", {key: "main"}, [
     navVnode,
     imgVnode,
     loaderVnode,
-    searchVnode,
     genericModalVnode
   ])
 }
 
-let dom$ = most.combine(main, nav.dom$, img.dom$, loader.dom$, search.dom$, genericModal.dom$);
+let dom$ = most.combine(main, nav.dom$, img.dom$, loader.dom$, genericModal.dom$);
 
 domSink({dom$, documentReady$});
