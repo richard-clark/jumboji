@@ -2,6 +2,8 @@
 
 A web application for generating large, emoji versions of... other emoji.
 
+<img src="https://cloud.githubusercontent.com/assets/6880453/26338740/74bb6894-3f50-11e7-8cb4-8641fc043817.png" width="400" height="400">
+
 ## Development
 
 1. [Install Yarn](https://yarnpkg.com/en/docs/install).
