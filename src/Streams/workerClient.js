@@ -23,7 +23,8 @@ function generateDataToRender(appearanceData, config) {
 function eventsAreEqual(a, b) {
   const areEqual = a.appearanceData.metrics === b.appearanceData.metrics
     && a.config.emoji === b.config.emoji
-    && a.config.imageSize === b.config.imageSize;
+    && a.config.imageSize === b.config.imageSize
+    && a.config.sampleNeighbors === b.config.sampleNeighbors;
   return areEqual;
 }
 

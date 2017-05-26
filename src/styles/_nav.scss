@@ -64,6 +64,10 @@
     display: none;
   }
 
+  .nav__group--dropdown-only {
+    display: none;
+  }
+
   @media (max-width: 600px) {
     .nav__group--l {
       display: none;

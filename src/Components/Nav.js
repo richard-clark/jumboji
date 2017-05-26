@@ -168,6 +168,7 @@ function view({palette}, config, initialLoading, imageBlob, visibleDropdown, sea
             visible: visibleDropdown === "search",
             name: "search",
             pullRight: true,
+            cls: { "dropdown--search-dropdown": true },
             children: [
               SearchButton({config}),
               searchVnode,
@@ -185,7 +186,7 @@ function view({palette}, config, initialLoading, imageBlob, visibleDropdown, sea
           Dropdown({
             visible: visibleDropdown === "settings",
             name: "settings",
-            cls: { "nav__item--o-l": true },
+            // cls: { "nav__item--o-l": true },
             children: [
               DropdownToggle({
                 vnode: IconButton({

@@ -53,6 +53,27 @@ export function getMenuConfig(config) {
           tooltip: "On"
         }
       ]
+    }, {
+      name: "Accuracy vs. Variation",
+      size: "dropdown-only",
+      items: [
+        {
+          data: {action: "set-neighbors", sampleNeighbors: 1},
+          icon: "filter_1",
+          selected: config.sampleNeighbors === 1,
+          tooltip: "More Accuracy"
+        }, {
+          data: {action: "set-neighbors", sampleNeighbors: 5},
+          icon: "filter_2",
+          selected: config.sampleNeighbors === 5,
+          tooltip: "Medium"
+        }, {
+          data: {action: "set-neighbors", sampleNeighbors: 8},
+          icon: "filter_3",
+          selected: config.sampleNeighbors === 8,
+          tooltip: "More Variation"
+        }
+      ]
     }
   ]
 }

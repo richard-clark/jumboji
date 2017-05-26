@@ -26,10 +26,8 @@ function dom(results, {query}) {
   }
 
   let emptyState = "";
-  if (!results.hasData) {
-    emptyState = EmptyStateButton("detective");
-  } else if (results.totalResults === 0) {
-    emptyState = EmptyStateButton("shrug");
+  if (!results.hasData || results.totalResults === 0) {
+    emptyState = EmptyStateButton("😞");
   }
 
   const closeButton = h("button.dropdown__close", {
@@ -48,7 +46,7 @@ function dom(results, {query}) {
         }
       })
     ]),
-    h("div.dropdown-group.search-results", {}, [
+    h("div.dropdown-group.search-results.dropdown-group--no-padding", {}, [
       ...resultElements,
       moreIndicator,
       emptyState

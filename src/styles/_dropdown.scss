@@ -38,6 +38,10 @@
     }
   }
 
+  &.dropdown--search-dropdown .dropdown__content {
+    margin-top: 5px;
+  }
+
   .dropdown__content-inner {
     overflow-y: auto;
   }

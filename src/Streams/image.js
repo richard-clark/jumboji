@@ -38,7 +38,8 @@ function imagesAreEqual(a, b) {
     a.config.tileSize === b.config.tileSize &&
     a.config.imageSize === b.config.imageSize &&
     a.config.padding === b.config.padding &&
-    a.config.background === b.config.background;
+    a.config.background === b.config.background &&
+    a.config.sampleNeighbors === b.config.sampleNeighbors;
   return areEqual;
 }
 
