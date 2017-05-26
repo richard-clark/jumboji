@@ -33,11 +33,12 @@ function SettingsMenuButton(config) {
 
 
 function menuConfigToSettingsMenuSections(menuConfig) {
-  return menuConfig.map((group) => {
-    return h("div.settings-menu__section", {},
-      group.map(SettingsMenuButton)
-    )
-  });
+  // return menuConfig.map((group) => {
+  //   return h("div.settings-menu__section", {},
+  //     group.map(SettingsMenuButton)
+  //   )
+  // });
+  return "";
 }
 
 function dom(config, show) {

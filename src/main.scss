@@ -1,8 +1,9 @@
 @import url("https://fonts.googleapis.com/icon?family=Material+Icons");
+@import url('https://fonts.googleapis.com/css?family=Lato');
 @import "../node_modules/minireset.css/minireset.sass";
 
 body {
-  font-family: sans-serif;
+  font-family: 'Lato', sans-serif;
   overflow: hidden;
 }
 
@@ -10,10 +11,11 @@ button,
 input {
   // Newer emoji aren't displayed correctly if this isn't set.
   // (For example, Chrome displays "✈" instead of ✈️)
-  font-family: sans-serif;
+  font-family: 'Lato', sans-serif;
 }
 
 @import "./styles/cube-loader.scss";
+@import "./styles/dropdown.scss";
 @import "./styles/icon-button.scss";
 @import "./styles/img-container.scss";
 @import "./styles/input.scss";

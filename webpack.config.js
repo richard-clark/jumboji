@@ -43,7 +43,6 @@ module.exports = function(env) {
           loader: "file-loader"
         }, {
           test: /worker\.js$/,
-          // include: paths.appSrc,
           use: [
             { loader: 'worker-loader' },
             { loader: 'babel-loader',
@@ -67,7 +66,7 @@ module.exports = function(env) {
       new FaviconsWebpackPlugin("./favicon.png"),
       new HtmlWebpackPlugin({
         baseUrl: isProduction ? "/jumboji/" : "/",
-        title: "Jumboji 🕺🏽"
+        title: "Jumboji [beta]"
       }),
       new webpack.HotModuleReplacementPlugin()
     ]

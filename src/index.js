@@ -84,13 +84,6 @@ const loading$ = most.combine(
   workerLoading$
 );
 
-let nav = Nav({
-  dataToRender$,
-  config$,
-  initialLoading$,
-  image$
-});
-
 let loader = Loader({ loading$ });
 
 let search = Search({ dataMatchingSearch$, searchParams$ });
@@ -101,8 +94,8 @@ const settingsMenuVisible$ = most.merge(
     .filter((event) => event.keyCode === 27)
     .map(() => false),
 
-  routerInterface.stateAction$
-    .map(() => false),
+  // routerInterface.stateAction$
+  //   .map(() => false),
 
   clickWithDataTarget$
     .filter(({trigger}) => trigger === "close-settings-menu")
@@ -112,23 +105,32 @@ const settingsMenuVisible$ = most.merge(
     .filter(({trigger}) => trigger === "show-settings-menu")
     .map(() => true)
 
-).startWith(false).multicast();
+).startWith(false)
+  .skipRepeats()
+  .multicast();
 
-let settings = Settings({config$, settingsMenuVisible$});
+settingsMenuVisible$.observe((v) => console.log("settings menu visible", v));
+
+let nav = Nav({
+  dataToRender$,
+  config$,
+  initialLoading$,
+  image$,
+  settingsMenuVisible$
+});
 
 let genericModal = GenericModal({genericModal$});
 
-function main(navVnode, imgVnode, loaderVnode, searchVnode, settingsVnode, genericModalVnode) {
+function main(navVnode, imgVnode, loaderVnode, searchVnode, genericModalVnode) {
   return h("main.main", {key: "main"}, [
     navVnode,
     imgVnode,
     loaderVnode,
     searchVnode,
-    settingsVnode,
     genericModalVnode
   ])
 }
 
-let dom$ = most.combine(main, nav.dom$, img.dom$, loader.dom$, search.dom$, settings.dom$, genericModal.dom$);
+let dom$ = most.combine(main, nav.dom$, img.dom$, loader.dom$, search.dom$, genericModal.dom$);
 
 domSink({dom$, documentReady$});

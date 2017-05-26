@@ -1,5 +1,6 @@
 import * as most from "most";
 import dataUrl from "../data.json";
+import 'whatwg-fetch';
 
 function resolveAfter(time=300) {
   return new Promise((resolve) => window.setTimeout(resolve, time));

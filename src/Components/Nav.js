@@ -2,6 +2,7 @@ import {h} from "snabbdom/h";
 import * as most from "most";
 import convert from "color-convert";
 import {getMenuConfig} from "./menu.js";
+import {DropdownContent} from "./dropdown.js";
 
 function TooltipContainer({tooltip, tooltipAlignRight, trigger}) {
 
@@ -97,13 +98,13 @@ function ImageBlob$({image$}) {
 
 function menuConfigToToolbarElements(menuConfig) {
   return menuConfig.map((group) => {
-    return h("div.nav__group.nav__group--l", {},
-      group.map(IconButton)
+    return h(`div.nav__group.nav__group--${group.size}`, {},
+      group.items.map((item) => IconButton({...item, tooltip: `${group.name}: ${item.tooltip}`}))
     );
   })
 }
 
-function view({palette}, config, initialLoading, imageBlob) {
+function view({palette}, config, initialLoading, imageBlob, settingsMenuVisible) {
 
   const navStyle = getNavStyle(palette);
   const style = `background-color:${navStyle.backgroundColor}`;
@@ -159,12 +160,22 @@ function view({palette}, config, initialLoading, imageBlob) {
         ]),
         ...toolbarElements,
         h("div.nav__group", {}, [
-          IconButton({
-            sel: "button",
-            icon: "settings",
-            data: {trigger: "show-settings-menu"},
-            tooltip: "Settings"
-          }),
+          h("div.dropdown.nav__item--o-l", {
+            class: {
+              "dropdown--active": settingsMenuVisible
+            }
+          }, [
+            IconButton({
+              sel: "button.dropdown__toggle",
+              icon: "more_vert",
+              data: {trigger: "show-settings-menu"},
+              tooltip: "Settings"
+            }),
+            DropdownContent({
+              menuConfig: menuConfig,
+              closeButtonData: {trigger: "close-settings-menu"}
+            })
+          ]),
           IconButton({
             sel: "a",
             icon: "file_download",
@@ -183,7 +194,8 @@ export default function Nav({
   dataToRender$,
   config$,
   initialLoading$,
-  image$
+  image$,
+  settingsMenuVisible$
 }) {
 
   const imageBlob$ = ImageBlob$({image$});
@@ -193,7 +205,8 @@ export default function Nav({
     dataToRender$,
     config$,
     initialLoading$,
-    imageBlob$
+    imageBlob$,
+    settingsMenuVisible$
   );
 
   return {dom$};

@@ -43,9 +43,12 @@
     width: 100%;
 
     @media (max-width: 600px) {
-      & {
-        max-width: 700px;
-      }
+      max-width: 700px;
+    }
+
+    @media (max-width: 500px) {
+      padding-left: 20px;
+      padding-right: 20px;
     }
   }
 
@@ -57,10 +60,29 @@
     display: flex;
   }
 
+  .nav__item--o-l {
+    display: none;
+  }
+
   @media (max-width: 600px) {
     .nav__group--l {
       display: none;
     }
+
+    .nav__item--o-l {
+      display: block;
+    }
   }
 
+  @media (max-width: 550px) {
+    .nav__group--m {
+      display: none;
+    }
+  }
+
+  @media (max-width: 500px) {
+    .nav__group--s {
+      display: none;
+    }
+  }
 }
