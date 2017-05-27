@@ -6,7 +6,7 @@ export const INITIAL_CONFIG = {
   fullSize: false,
   imageSize: 32,
   tileSize: 32,
-  sampleNeighbors: 5,
+  variation: 5,
   padding: false,
   background: null
 };
@@ -26,8 +26,8 @@ export function actionReducer(state, event) {
       return {...state, fullSize: !state.fullSize};
     case "set-padding":
       return {...state, padding: event.padding === "true"};
-    case "set-neighbors":
-      return {...state, sampleNeighbors: parseInt(event.sampleNeighbors)};
+    case "set-variation":
+      return {...state, variation: parseInt(event.variation)};
     default:
       return state;
   }

@@ -3,20 +3,24 @@ import * as most from "most";
 import regeneratorRuntime from "regenerator-runtime";
 import quantize from "quantize";
 
-/*
-Previously, we chose a fixed number of neighbors, determined the distance to the
-closest, and then filtered out all but neights with
+const SAMPLE_NEIGHBORS = 20;
 
-  distance < closestDistance * (1 + MAX_VARIATION)
+function getNeighborsWithinVariation(items, maxVariation) {
+  let endIndex = 1;
+  const maxDistance = items[0].distance * maxVariation;
+  while (endIndex < items.length && items[endIndex].distance <= maxDistance) {
+    endIndex++;
+  }
+  return items.slice(0, endIndex);
+}
 
-(MAX_VARIATION was 0.9)
-*/
-
-function getEmojiForPixelData(emojiData, pixelData, sampleNeighbors=10) {
+function getEmojiForPixelData(emojiData, pixelData, variationFactor=10) {
   const pixelDataTree = tree.tree(emojiData, "color");
+  const maxVariation = Math.pow(10, 1+variationFactor/10) / 10; // 1..10, increasing exponentially
 
   const emojiPixelData = pixelData.map((data) => {
-    const neighbors = tree.nNearestNeighbors(pixelDataTree, data.color, "color", sampleNeighbors);
+    const allNeighbors = tree.nNearestNeighbors(pixelDataTree, data.color, "color", SAMPLE_NEIGHBORS);
+    const neighbors = getNeighborsWithinVariation(allNeighbors, maxVariation);
     return {
       x: data.x,
       y: data.y,
@@ -43,7 +47,7 @@ function objectValues(obj) {
   return Object.keys(obj).map((key) => obj[key]);
 }
 
-function* process(appearanceData, pixelData, sampleNeighbors) {
+function* process(appearanceData, pixelData, variation) {
   if (!pixelData) {
     return {
       loading: false
@@ -53,7 +57,7 @@ function* process(appearanceData, pixelData, sampleNeighbors) {
   yield { loading: true };
 
   const emojiData = objectValues(appearanceData.data).filter((value) => value.supported);
-  const data = getEmojiForPixelData(emojiData, pixelData, sampleNeighbors);
+  const data = getEmojiForPixelData(emojiData, pixelData, variation);
   const palette = getColorPalette(pixelData);
 
   yield {
@@ -70,8 +74,8 @@ function rand(exclusiveMax) {
 const message$ = most.fromEvent("message", self);
 
 message$.concatMap(({data}) => {
-  const {appearanceData, pixelData, sampleNeighbors} = data;
-  const s$ = process(appearanceData, pixelData, sampleNeighbors);
+  const {appearanceData, pixelData, variation} = data;
+  const s$ = process(appearanceData, pixelData, variation);
   return most.from(s$);
 })
 .observe((event) => self.postMessage(event));

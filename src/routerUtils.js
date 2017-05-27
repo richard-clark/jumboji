@@ -38,8 +38,8 @@ export function configToPath(config, emojiToNameMap) {
     components.push(`bg-${background}`)
   }
 
-  if (config.sampleNeighbors !== configStream.INITIAL_CONFIG.sampleNeighbors) {
-    components.push(`n-${config.sampleNeighbors}`);
+  if (config.variation !== configStream.INITIAL_CONFIG.variation) {
+    components.push(`n-${config.variation}`);
   }
 
   if (config.padding) {
@@ -99,10 +99,10 @@ export function pathToEvents(path, emojiToNameMap) {
 
     match = option.match(/^n-(\d{1,2})$/);
     if (match) {
-      const neighbors = parseInt(match[1]);
+      const variation = parseInt(match[1]);
       actions.push({
-        action: "set-neighbors",
-        sampleNeighbors: neighbors
+        action: "set-variation",
+        variation
       });
       continue;
     }

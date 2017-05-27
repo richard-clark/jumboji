@@ -58,19 +58,19 @@ export function getMenuConfig(config) {
       size: "dropdown-only",
       items: [
         {
-          data: {action: "set-neighbors", sampleNeighbors: 1},
+          data: {action: "set-variation", variation: 1},
           icon: "filter_1",
-          selected: config.sampleNeighbors === 1,
+          selected: config.variation === 1,
           tooltip: "More Accuracy"
         }, {
-          data: {action: "set-neighbors", sampleNeighbors: 5},
+          data: {action: "set-variation", variation: 5},
           icon: "filter_2",
-          selected: config.sampleNeighbors === 5,
+          selected: config.variation === 5,
           tooltip: "Medium"
         }, {
-          data: {action: "set-neighbors", sampleNeighbors: 8},
+          data: {action: "set-variation", variation: 10},
           icon: "filter_3",
-          selected: config.sampleNeighbors === 8,
+          selected: config.variation === 10,
           tooltip: "More Variation"
         }
       ]

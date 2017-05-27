@@ -40,7 +40,7 @@ function imagesAreEqual(a, b) {
     a.config.imageSize === b.config.imageSize &&
     a.config.padding === b.config.padding &&
     a.config.background === b.config.background &&
-    a.config.sampleNeighbors === b.config.sampleNeighbors;
+    a.config.variation === b.config.variation;
   return areEqual;
 }
 
@@ -55,7 +55,7 @@ function* clearAndRender(dataToRender, appearance, config, previousConfig) {
     const sizeChanged = previousConfig
       && (config.tileSize !== previousConfig.tileSize
           || config.imageSize !== previousConfig.imageSize
-          || config.sampleNeighbors !== previousConfig.sampleNeighbors);
+          || config.variation !== previousConfig.variation);
     if (!sizeChanged) {
       yield renderImage(dataToRender.data, appearance, config);
     }

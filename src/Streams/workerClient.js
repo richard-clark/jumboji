@@ -16,7 +16,7 @@ function generateDataToRender(appearanceData, config) {
   return {
     appearanceData,
     pixelData,
-    sampleNeighbors: config.sampleNeighbors
+    variation: config.variation
   };
 }
 
@@ -24,7 +24,7 @@ function eventsAreEqual(a, b) {
   const areEqual = a.appearanceData.metrics === b.appearanceData.metrics
     && a.config.emoji === b.config.emoji
     && a.config.imageSize === b.config.imageSize
-    && a.config.sampleNeighbors === b.config.sampleNeighbors;
+    && a.config.variation === b.config.variation;
   return areEqual;
 }
 
