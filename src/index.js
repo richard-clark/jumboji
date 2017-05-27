@@ -18,7 +18,7 @@ import {VisibleDropdown$} from "./Streams/dropdown.js";
 const allData$ = Data$({});
 
 function filterUnsupported(data, appearanceData) {
-  return data.filter((point) => appearanceData.data[point.num].supported);
+  return data.filter((point) => appearanceData.data[point.char].supported);
 }
 
 const documentReady$ = DocumentReady$();

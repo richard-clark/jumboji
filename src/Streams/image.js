@@ -10,6 +10,7 @@ function renderImage(data, {metrics}, {tileSize, imageSize, padding, background}
   const TILE_SIZE = tileSize;
 
   const emojiCanvas = utils.createCanvas(width, height);
+  document.body.appendChild(emojiCanvas);
   const context = emojiCanvas.getContext("2d");
   const fontSize = Math.round(TILE_SIZE / metrics.actualHeightRatio * 100) / 100;
   context.font = `${fontSize}px sans-serif`;

@@ -8,7 +8,7 @@ export function EmojiToNameMap$({data$}) {
   return data$
     .map((data) => {
       return data.reduce((map, point) => {
-        const char = utils.getChar(point);
+        const char = point.char
         const name = utils.getURLSafeName(point.name);
         map.nameForChar[char] = name;
         map.charForName[name] = char;

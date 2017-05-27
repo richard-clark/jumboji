@@ -7,7 +7,7 @@ function search(data, searchParams) {
 
   if (query.length > 0) {
     results = data.filter((point) => {
-      return query === utils.getChar(point) ||
+      return query === point.char ||
         point.name.toLowerCase().indexOf(query) >= 0 ||
         point.keywords.some((keyword) => keyword.indexOf(query) >= 0);
     })
@@ -17,7 +17,7 @@ function search(data, searchParams) {
     hasData: data.length > 0,
     results: results.slice(0, 19).map((point) => ({
       name: point.name,
-      emoji: utils.getChar(point)
+      emoji: point.char
     })),
     totalResults: results.length
   };

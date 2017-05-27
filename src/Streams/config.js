@@ -37,7 +37,7 @@ function getRandomEmoji(data) {
   const point = data[utils.rand(data.length)];
   return {
     action: "set-emoji",
-    emoji: utils.getChar(point)
+    emoji: point.char
   };
 }
 
