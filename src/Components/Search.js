@@ -57,9 +57,16 @@ function dom(results, {query}) {
 
 }
 
-export default function Search({dataMatchingSearch$, searchParams$}) {
+export default function Search({dataMatchingSearch$, searchParams$, visibleDropdown$}) {
 
   const dom$ = most.combine(dom, dataMatchingSearch$, searchParams$);
+
+  visibleDropdown$
+    .map((visible) => visible === "search")
+    .skipRepeats()
+    .filter((isVisible) => true)
+    .delay(100)
+    .observe(() => document.querySelector(".search-input").select());
 
   return { dom$ }
 

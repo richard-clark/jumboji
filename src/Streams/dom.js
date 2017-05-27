@@ -15,7 +15,9 @@ export function DocumentReady$() {
 }
 
 export function ClickWithDataTarget$() {
-  return most.fromEvent("click", document, true)
+  // useCapture is necessary so that we can prevent this event from
+  // occuring in Streams/dropdown.js
+  return most.fromEvent("mouseup", document.body, true)
     .map(getDataTarget)
     .filter((target) => target)
     .multicast();

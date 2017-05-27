@@ -206,7 +206,7 @@ export default function Nav({
   searchParams$
 }) {
 
-  let search = Search({ dataMatchingSearch$, searchParams$ });
+  let search = Search({ dataMatchingSearch$, searchParams$, visibleDropdown$ });
 
   const dom$ = most.combine(
     view,
