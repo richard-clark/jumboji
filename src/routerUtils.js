@@ -74,7 +74,7 @@ export function pathToEvents(path, emojiToNameMap) {
     if (option === "padding") {
       actions.push({
         action: "set-padding",
-        padding: true
+        padding: "true"
       });
       continue;
     }

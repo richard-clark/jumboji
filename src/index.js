@@ -3,12 +3,10 @@ import * as most from "most";
 import * as utils from "./utils.js";
 import Config$ from "./Streams/config.js";
 import Data$ from "./Streams/data.js";
-import Image$ from "./Streams/image.js";
+import ImageBlob$ from "./Streams/image.js";
 import {DataMatchingSearch$, SearchAction$, SearchParams$} from "./Streams/search.js";
 import WorkerClient$ from "./Streams/workerClient.js";
-import GenericModal$ from "./Streams/genericModal.js";
 import {DocumentReady$, ClickWithDataTarget$} from "./Streams/dom.js";
-import GenericModal from "./Components/GenericModal.js";
 import Img from "./Components/Img.js";
 import Loader from "./Components/Loader.js";
 import Nav from "./Components/Nav.js";
@@ -34,8 +32,6 @@ const data$ = most.combine(filterUnsupported, allData$, appearanceData$)
 const routerInterface = routerUtils.makeInterface({data$});
 
 const clickWithDataTarget$ = ClickWithDataTarget$();
-
-const genericModal$ = GenericModal$({allData$, appearanceData$, clickWithDataTarget$});
 
 const searchAction$ = SearchAction$({clickWithDataTarget$});
 const searchParams$ = SearchParams$({clickWithDataTarget$, searchAction$});
@@ -66,10 +62,10 @@ const dataToRender$ = workerClient$
   .startWith({})
   .multicast();
 
-let image$ = Image$({dataToRender$, appearanceData$, config$})
+let imageBlob$ = ImageBlob$({dataToRender$, appearanceData$, config$})
   .startWith(null);
 
-let img = Img({image$, config$});
+let img = Img({imageBlob$, config$});
 
 const initialLoading$ = appearanceData$
   .map(() => false)
@@ -91,23 +87,22 @@ let nav = Nav({
   dataToRender$,
   config$,
   initialLoading$,
-  image$,
+  imageBlob$,
   visibleDropdown$,
   dataMatchingSearch$,
   searchParams$
 });
 
-let genericModal = GenericModal({genericModal$});
-
-function main(navVnode, imgVnode, loaderVnode, genericModalVnode) {
+function main(navVnode, imgVnode, loaderVnode) {
   return h("main.main", {key: "main"}, [
     navVnode,
     imgVnode,
-    loaderVnode,
-    genericModalVnode
+    loaderVnode
   ])
 }
 
-let dom$ = most.combine(main, nav.dom$, img.dom$, loader.dom$, genericModal.dom$);
+// let dom$ = most.combine(main, nav.dom$, img.dom$, loader.dom$);
+
+let dom$ = most.combine(main, nav.dom$, img.dom$, loader.dom$);
 
 domSink({dom$, documentReady$});

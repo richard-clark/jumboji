@@ -1,7 +1,7 @@
 import {h} from "snabbdom/h";
 import * as most from "most";
 
-function render(imageSrc, config) {
+function render(imageUrl, config) {
 
   let cls = ".main__content.img-container";
   if (config.fullSize) {
@@ -9,11 +9,11 @@ function render(imageSrc, config) {
   }
 
   let img = "";
-  if (imageSrc) {
+  if (imageUrl) {
     img = h("img.img-container__img", {
       key: "img-inner",
       props: {
-        src: imageSrc
+        src: imageUrl
       }
     });
   }
@@ -26,11 +26,11 @@ function render(imageSrc, config) {
   return vnode;
 }
 
-export default function Img({image$, config$}) {
+export default function Img({imageBlob$, config$}) {
 
   const dom$ = most.combine(
     render,
-    image$,
+    imageBlob$,
     config$
   );
 

@@ -10,6 +10,10 @@
     margin-bottom: 0;
   }
 
+  &.icon-btn--disabled {
+    cursor: not-allowed;
+  }
+
   .material-icons {
     display: block;
   }

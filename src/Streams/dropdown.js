@@ -25,8 +25,6 @@ export function VisibleDropdown$({clickWithDataTarget$}) {
     .startWith(null)
     .multicast();
 
-  visibleDropdown$.observe((e) => console.log("visible", e));
-
   return visibleDropdown$;
 
 }

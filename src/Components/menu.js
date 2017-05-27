@@ -26,7 +26,7 @@ export function getMenuConfig(config) {
       size: "m",
       items: [
         {
-          data: {action: "set-background", background: null},
+          data: {action: "set-background", background: "transparent"},
           icon: "panorama_fish_eye",
           selected: !config.background,
           tooltip: "Transparent"
@@ -42,12 +42,12 @@ export function getMenuConfig(config) {
       size: "l",
       items: [
         {
-          data: {action: "set-padding", padding: false},
+          data: {action: "set-padding", padding: "false"},
           icon: "grid_off",
           selected: !config.padding,
           tooltip: "Off"
         }, {
-          data: {action: "set-padding", padding: true},
+          data: {action: "set-padding", padding: "true"},
           icon: "grid_on",
           selected: config.padding,
           tooltip: "On"

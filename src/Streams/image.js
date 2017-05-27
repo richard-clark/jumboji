@@ -61,7 +61,7 @@ function* clearAndRender(dataToRender, appearance, config, previousConfig) {
   }
 }
 
-export default function Image$({dataToRender$, appearanceData$, config$}) {
+function Image$({dataToRender$, appearanceData$, config$}) {
 
   const image$ = most.combine(
     ((dataToRender, appearanceData, config) =>
@@ -82,4 +82,36 @@ export default function Image$({dataToRender$, appearanceData$, config$}) {
   );
 
   return image$;
+}
+
+export default function ImageBlob$({dataToRender$, appearanceData$, config$}) {
+  const image$ = Image$({dataToRender$, appearanceData$, config$});
+
+  return image$
+    .skipRepeats()
+    .map((image) => {
+      if (image) {
+        // http://stackoverflow.com/a/16245768
+        const splitIndex = image.indexOf(",");
+        const imageData = atob(image.slice(splitIndex+1));
+        let binaryData = new Array(imageData.length);
+        for (let i = 0; i < binaryData.length; i++) {
+          binaryData[i] = imageData.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(binaryData);
+        // http://stackoverflow.com/a/23956661
+        const blob = new Blob([byteArray], {type: "image/png"});
+        return blob;
+      } else {
+        return image;
+      }
+    })
+    .map((imageBlob) => {
+      if (imageBlob) {
+        // http://stackoverflow.com/a/23956661
+        return URL.createObjectURL(imageBlob)
+      }
+    })
+    .multicast();
+
 }

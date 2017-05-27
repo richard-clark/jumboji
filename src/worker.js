@@ -38,8 +38,12 @@ function getColorPalette(data) {
   return colorMap.palette();
 }
 
-function* process(appearanceData, pixelData, sampleNeighbors) {
+// Object.values isn't supported on Safari
+function objectValues(obj) {
+  return Object.keys(obj).map((key) => obj[key]);
+}
 
+function* process(appearanceData, pixelData, sampleNeighbors) {
   if (!pixelData) {
     return {
       loading: false
@@ -48,7 +52,7 @@ function* process(appearanceData, pixelData, sampleNeighbors) {
 
   yield { loading: true };
 
-  const emojiData = Object.values(appearanceData.data).filter((value) => value.supported);
+  const emojiData = objectValues(appearanceData.data).filter((value) => value.supported);
   const data = getEmojiForPixelData(emojiData, pixelData, sampleNeighbors);
   const palette = getColorPalette(pixelData);
 

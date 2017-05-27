@@ -3,6 +3,7 @@ import * as most from "most";
 import cls from "snabbdom/modules/class";
 import dataset from "snabbdom/modules/dataset";
 import props from "snabbdom/modules/props";
+import style from "snabbdom/modules/style";
 import eventlisteners from "snabbdom/modules/eventlisteners";
 
 export default function domSink({documentReady$, dom$}) {
@@ -10,6 +11,7 @@ export default function domSink({documentReady$, dom$}) {
     cls,
     dataset,
     props,
+    style,
     eventlisteners
   ]);
 

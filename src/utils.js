@@ -216,7 +216,7 @@ export function getPixelDataForChar(char, metrics, size) {
 
 // For each OS, each emoji has different widths and each missing glyph has
 // different widths. Thus, we have to try to detect the OS and set this
-// appropriately. 
+// appropriately.
 function getMaxCharWidth() {
   const userAgent = window.navigator.userAgent;
 
@@ -226,7 +226,10 @@ function getMaxCharWidth() {
     return 1.5;
   } else {
     // Assume macOS
-    return 1.2
+    // Chrome: ~1.05
+    // Safari: ~1.35 for some reason
+    // Firefox: ~1.35
+    return 1.4
   }
 
 }
