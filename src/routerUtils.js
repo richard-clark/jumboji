@@ -118,7 +118,6 @@ function getHistoryObservable(history) {
     const unlisten = history.listen((location) => {
       observer.next(location);
     });
-    // observer.next(history.location);
     return () => unlisten();
   });
 }

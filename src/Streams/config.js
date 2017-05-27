@@ -67,14 +67,15 @@ export default function Config$({
       .filter(({trigger}) => trigger === "randomize")
   ).multicast();
 
-  // For some reason, randomizeAction$ events only show up in config$ if this
-  // is set.
-  randomizeAction$.observe((ev) => console.log(ev));
-
   const _searchAction$ = clickWithDataTarget$
     .filter(({trigger}) => trigger === "search-result")
     .filter((action) => action.emoji)
     .map((action) => ({action: "set-emoji", emoji: action.emoji}));
+
+  // Not sure why this is necessary, but the streams don't emit events (when
+  // merged, see below) unless they're observed.
+  stateAction$.drain();
+  randomizeAction$.drain();
 
   const config$ = initialConfig$
     .take(1)
