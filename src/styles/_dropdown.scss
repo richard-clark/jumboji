@@ -54,9 +54,14 @@
   .dropdown__close {
     @include plain-button;
     color: $white;
+    display: none;
     margin-left: auto;
     // Safari:
     width: 24px;
+
+    @media (max-width: 400px) {
+      display: block;
+    }
   }
 
 }
