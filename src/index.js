@@ -1,19 +1,29 @@
-import "./main.scss";
 import * as most from "most";
 import * as utils from "./utils.js";
-import Config$ from "./Streams/config.js";
-import Data$ from "./Streams/data.js";
-import ImageBlob$ from "./Streams/image.js";
-import {DataMatchingSearch$, SearchAction$, SearchParams$} from "./Streams/search.js";
-import WorkerClient$ from "./Streams/workerClient.js";
-import {DocumentReady$, ClickWithDataTarget$} from "./Streams/dom.js";
+import {h} from "snabbdom/h";
+import createHistory from "history/createBrowserHistory";
+
 import Img from "./Components/Img.js";
 import Loader from "./Components/Loader.js";
 import Nav from "./Components/Nav.js";
-import {h} from "snabbdom/h";
-import domSink from "./domSink.js";
-import * as routerUtils from "./routerUtils.js";
+
+import Config$ from "./Streams/config.js";
+import Data$ from "./Streams/data.js";
+import {DocumentReady$, ClickWithDataTarget$} from "./Streams/dom.js";
 import {VisibleDropdown$} from "./Streams/dropdown.js";
+import EmojiToNameMap$ from "./Streams/emojiToNameMap.js";
+import ImageBlob$ from "./Streams/image.js";
+import {Loading$, InitialLoading$} from "./Streams/loading.js";
+import {DataMatchingSearch$, SearchAction$, SearchParams$} from "./Streams/search.js";
+import StateAction$ from "./Streams/stateAction.js";
+import WorkerClient$ from "./Streams/workerClient.js";
+
+import domSink from "./Sinks/dom.js";
+import routerSink from "./Sinks/router.js";
+
+import "./main.scss";
+
+const history = createHistory();
 
 const allData$ = Data$({});
 
@@ -29,7 +39,8 @@ const appearanceData$ = most.combine(utils.getData, allData$, documentReady$)
 const data$ = most.combine(filterUnsupported, allData$, appearanceData$)
   .multicast();
 
-const routerInterface = routerUtils.makeInterface({data$});
+const emojiToNameMap$ = EmojiToNameMap$({data$});
+const stateAction$ = StateAction$({history, emojiToNameMap$, data$});
 
 const clickWithDataTarget$ = ClickWithDataTarget$();
 
@@ -43,11 +54,9 @@ const dataMatchingSearch$ = DataMatchingSearch$({
 const config$ = Config$({
   data$,
   clickWithDataTarget$,
-  initialConfig$: routerInterface.initialConfig$,
-  stateAction$: routerInterface.stateAction$,
+  stateAction$,
   searchAction$
 });
-routerInterface.observe(config$);
 
 const workerClient$ = WorkerClient$({
   appearanceData$,
@@ -67,18 +76,8 @@ let imageBlob$ = ImageBlob$({dataToRender$, appearanceData$, config$})
 
 let img = Img({imageBlob$, config$});
 
-const initialLoading$ = appearanceData$
-  .map(() => false)
-  .startWith(true);
-const workerLoading$ = workerClient$
-  .map(({loading}) => loading)
-  .startWith(false);
-const loading$ = most.combine(
-  (a, b) => a || b,
-  initialLoading$,
-  workerLoading$
-);
-
+let initialLoading$ = InitialLoading$({appearanceData$});
+let loading$ = Loading$({initialLoading$, workerClient$});
 let loader = Loader({ loading$ });
 
 const visibleDropdown$ = VisibleDropdown$({clickWithDataTarget$});
@@ -101,8 +100,7 @@ function main(navVnode, imgVnode, loaderVnode) {
   ])
 }
 
-// let dom$ = most.combine(main, nav.dom$, img.dom$, loader.dom$);
-
 let dom$ = most.combine(main, nav.dom$, img.dom$, loader.dom$);
 
+routerSink({history, config$, emojiToNameMap$});
 domSink({dom$, documentReady$});
