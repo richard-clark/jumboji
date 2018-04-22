@@ -13,6 +13,21 @@ function imagesAreEqual(a, b) {
   return areEqual;
 }
 
+function imageToDataURL(image) {
+  // http://stackoverflow.com/a/16245768
+  const splitIndex = image.indexOf(",");
+  const imageData = atob(image.slice(splitIndex + 1));
+  let binaryData = new Array(imageData.length);
+  for (let i = 0; i < binaryData.length; i++) {
+    binaryData[i] = imageData.charCodeAt(i);
+  }
+  const byteArray = new Uint8Array(binaryData);
+  // http://stackoverflow.com/a/23956661
+  const blob = new Blob([byteArray], { type: "image/png" });
+
+  return URL.createObjectURL(blob);
+}
+
 class Img extends PureComponent {
   constructor(props) {
     super(props);
@@ -71,6 +86,12 @@ class Img extends PureComponent {
           const image = this.canvas.toDataURL("image/png");
           this.image.src = image;
           this.image.style.display = null;
+
+          console.log("complete");
+          const start = new Date();
+          const blob = imageToDataURL(image);
+          console.log("done, elapsed:", new Date() - start);
+          this.props.onRenderComplete(blob);
         }
 
         this.setState({ renderProgress: 1 });
@@ -125,6 +146,7 @@ class Img extends PureComponent {
     this.canvas.style.display = null;
     this.image.style.display = "none";
     this.setState({ renderProgress: 0 });
+    this.props.onRenderStarted();
 
     const imageSize = Math.sqrt(imageData.length);
     let paddingAmount = padding ? tileSize * 0.2 : 0;
@@ -239,6 +261,17 @@ function mapDispatchToProps(dispatch) {
   return {
     onClick() {
       dispatch({ type: "TOGGLE_FULL_SIZE" });
+    },
+    onRenderComplete(downloadUrl) {
+      dispatch({
+        type: "RENDER_COMPLETE",
+        data: {
+          downloadUrl
+        }
+      });
+    },
+    onRenderStarted() {
+      dispatch({ type: "RENDER_STARTED" });
     }
   };
 }

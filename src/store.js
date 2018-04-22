@@ -108,6 +108,18 @@ function reducer(state = INITIAL_STATE, action) {
         searchResults: search(data, state.searchQuery)
       };
 
+    case "RENDER_COMPLETE":
+      return {
+        ...state,
+        downloadUrl: action.data.downloadUrl
+      };
+
+    case "RENDER_STARTED":
+      return {
+        ...state,
+        downloadUrl: null
+      };
+
     case "ROUTER_STATE_INITIALIZED":
       return {
         ...state,

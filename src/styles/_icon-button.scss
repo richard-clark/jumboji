@@ -10,8 +10,9 @@
     margin-bottom: 0;
   }
 
-  &.icon-btn--disabled {
+  &[disabled] {
     cursor: not-allowed;
+    opacity: 0.5;
   }
 
   .material-icons {

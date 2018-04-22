@@ -28,7 +28,6 @@ function colorToRGBString(color) {
 }
 
 function getNavStyle(palette) {
-  // dominantColor
   palette = palette || [[255, 255, 255]];
   const backgroundColor = palette[0];
   const bgColorInHSL = convert.rgb.hsl(backgroundColor);
@@ -61,8 +60,9 @@ function renderMenu() {
 function Nav({
   palette,
   initialLoading,
-  imageUrl,
+  downloadUrl,
   emoji,
+  emojiToNameMap,
   onCloseDropdown,
   onRandomizeEmoji,
   onShowDropdown,
@@ -78,6 +78,11 @@ function Nav({
     "nav--fg-dark": navStyle.useDarkTheme,
     "nav--visible": !initialLoading
   });
+
+  let download = "emoji";
+  if (emojiToNameMap && emojiToNameMap.nameForChar[emoji]) {
+    download = emojiToNameMap.nameForChar[emoji];
+  }
 
   return (
     <nav className={navClasses} style={style}>
@@ -115,6 +120,14 @@ function Nav({
               />
             </TooltipContainer>
           </Dropdown>
+          <TooltipContainer tooltip="Download">
+            <IconButton
+              icon="file_download"
+              disabled={!downloadUrl}
+              href={downloadUrl}
+              download={download}
+            />
+          </TooltipContainer>
         </div>
       </div>
     </nav>
@@ -126,7 +139,9 @@ function mapStateToProps(state) {
     emoji: state.emoji,
     initialLoading: state.initialLoading,
     palette: state.palette,
-    visibleDropdown: state.visibleDropdown
+    visibleDropdown: state.visibleDropdown,
+    downloadUrl: state.downloadUrl,
+    emojiToNameMap: state.emojiToNameMap
   };
 }
 
@@ -145,78 +160,3 @@ function mapDispatchToProps(dispatch) {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Nav);
-
-// function view({palette}, config, initialLoading, imageUrl, visibleDropdown, searchVnode) {
-//
-//   let downloadButtonProps = {};
-//   if (imageUrl) {
-//     downloadButtonProps = {
-//       download: "emoji.png",
-//       href: imageUrl
-//     };
-//   }
-//
-//   const menuConfig = getMenuConfig(config);
-//   const toolbarElements = menuConfigToToolbarElements(menuConfig);
-//
-//   const vnode = h(`nav`,
-//     {}, [
-//       h("div.nav__inner", {key: "nav-inner"}, [
-
-//         ...toolbarElements,
-//         h("div.nav__group", {}, [
-//           Dropdown({
-//             visible: visibleDropdown === "settings",
-//             name: "settings",
-//             children: [
-//               DropdownToggle({
-//                 vnode: IconButton({
-//                   sel: "button",
-//                   icon: "more_vert",
-//                   tooltip: "Settings"
-//                 }),
-//                 name: "settings"
-//               }),
-//               DropdownContentFromMenuConfig({menuConfig})
-//             ]
-//           }),
-//           IconButton({
-//             sel: "a",
-//             icon: "file_download",
-//             props: downloadButtonProps,
-//             disabled: !imageUrl,
-//             tooltip: "Download"
-//           })
-//         ])
-//       ])
-//     ]);
-//
-//   return vnode;
-//
-// }
-//
-// export default function Nav({
-//   dataToRender$,
-//   config$,
-//   initialLoading$,
-//   imageBlob$,
-//   visibleDropdown$,
-//   dataMatchingSearch$,
-//   searchParams$
-// }) {
-//
-//   let search = Search({ dataMatchingSearch$, searchParams$, visibleDropdown$ });
-//
-//   const dom$ = most.combine(
-//     view,
-//     dataToRender$,
-//     config$,
-//     initialLoading$,
-//     imageBlob$,
-//     visibleDropdown$,
-//     search.dom$
-//   );
-//
-//   return {dom$};
-//
-// }
