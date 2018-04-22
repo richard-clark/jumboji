@@ -31,34 +31,6 @@ export const INITIAL_STATE = {
   routerStateInitialized: false
 };
 
-const ACTIONS = new Set([
-  "CLOSE_DROPDOWN",
-  "DOCUMENT_READY",
-  "LOAD_DATA_REQUEST",
-  "LOAD_DATA_SUCCESS",
-  "LOAD_DATA_ERROR",
-  "RANDOMIZE",
-  "SET_BACKGROUND",
-  "SET_EMOJI",
-  "SET_IMAGE_SIZE",
-  "SET_PADDING",
-  "SET_TILE_SIZE",
-  "SET_VARIATION",
-  "TOGGLE_FULL_SIZE",
-  "UPDATE_SEARCH_QUERY"
-]);
-
-/*
-export function getRandomEmoji(data) {
-  const point = data[utils.rand(data.length)];
-  return {
-    action: "set-emoji",
-    emoji: point.char
-  };
-}
-
-*/
-
 function emojiToNameMap(data) {
   return data.reduce(
     (map, point) => {
@@ -230,22 +202,10 @@ const store = createStore(
 sagaMiddleware.run(sagas);
 
 document.addEventListener("DOMContentLoaded", () => {
-  setTimeout(() => {
+  window.setTimeout(() => {
     store.dispatch({ type: "DOCUMENT_READY" });
   }, 200);
 });
-
-/*
-function getParentDropdown(event) {
-  let element = event.target;
-  while (element) {
-    if (element.dataset && element.dataset.dropdown) {
-      return element.dataset.dropdown;
-    }
-    element = element.parentElement;
-  }
-}
-*/
 
 document.addEventListener("keyup", e => {
   if (e.keyCode === 27) {
@@ -255,42 +215,3 @@ document.addEventListener("keyup", e => {
 });
 
 export default store;
-
-/*
-import * as configUtils from "../configUtils.js";
-import * as most from "most";
-
-export default function Config$({
-  data$,
-  clickWithDataTarget$,
-  stateAction$,
-  searchAction$
-}) {
-
-  const clickAction$ = clickWithDataTarget$
-    .filter(({action}) => action);
-
-  const randomizeAction$ = most.combine(
-    configUtils.getRandomEmoji,
-    data$,
-    clickWithDataTarget$
-      .filter(({trigger}) => trigger === "randomize")
-  ).multicast();
-
-  const _searchAction$ = clickWithDataTarget$
-    .filter(({trigger}) => trigger === "search-result")
-    .filter((action) => action.emoji)
-    .map((action) => ({action: "set-emoji", emoji: action.emoji}));
-
-  const config$ = most.merge(stateAction$, clickAction$, _searchAction$, randomizeAction$)
-    .scan(configUtils.actionReducer, configUtils.INITIAL_CONFIG)
-    .skipRepeatsWith(configUtils.objectsAreEqual)
-    .debounce(200)
-    .startWith({})
-    .multicast();
-
-  return config$;
-
-}
-
-*/

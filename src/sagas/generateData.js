@@ -41,8 +41,6 @@ function getColorPalette(data) {
     .filter(({ transparent }) => !transparent)
     .map(({ rgbColor }) => [rgbColor.r, rgbColor.g, rgbColor.b]);
   const colorMap = quantize(opaquePixels, 4);
-  const palette = colorMap.palette();
-  const dominantColor = palette[0];
 
   return colorMap.palette();
 }
@@ -90,7 +88,6 @@ function statesAreEqual(a, b) {
 function* generateData() {
   let previousState = {};
 
-  // let apperanceData, emoji, imageSize, variation;
   while (true) {
     yield effects.take("*");
     const state = yield effects.select(s => ({

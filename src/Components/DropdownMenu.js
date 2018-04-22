@@ -2,7 +2,7 @@ import React from "react";
 import Icon from "./Icon.js";
 import classNames from "classnames";
 
-function DropdownButton({ selected, onClick, icon, children }) {
+function DropdownButton({ selected, onClick, icon, tooltip }) {
   const classes = classNames("dropdown-btn", {
     "dropdown-btn--selected": selected
   });
@@ -10,7 +10,7 @@ function DropdownButton({ selected, onClick, icon, children }) {
   return (
     <button className={classes} onClick={onClick}>
       <Icon className="dropdown-btn__icon" type={icon} />
-      <span className="dropdown-btn__text">{children}</span>
+      <span className="dropdown-btn__text">{tooltip}</span>
     </button>
   );
 

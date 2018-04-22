@@ -39,8 +39,6 @@ export function encodePath({
   return "/" + components.join("/");
 }
 
-let initialized = false;
-
 function updateStateFromPath(path) {
   const state = store.getState();
   const { emojiToNameMap } = state;
@@ -51,7 +49,6 @@ function updateStateFromPath(path) {
     return acc;
   }, {});
   let config = {
-    // ...previousConfig,
     emoji: INITIAL_STATE.emoji,
     padding: INITIAL_STATE.padding,
     imageSize: INITIAL_STATE.imageSize,
@@ -110,12 +107,10 @@ function updateStateFromPath(path) {
 }
 
 store.subscribe(() => {
-  console.log("store updated");
   const state = store.getState();
 
   if (!state.routerStateInitialized && state.emojiToNameMap) {
     history.listen(location => {
-      console.log("listen", location);
       updateStateFromPath(location.pathname);
     });
     updateStateFromPath(history.location.pathname);

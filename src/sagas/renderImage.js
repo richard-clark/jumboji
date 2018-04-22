@@ -86,16 +86,16 @@ function imageToBlob(image) {
 
   // http://stackoverflow.com/a/16245768
   const splitIndex = image.indexOf(",");
-  const imageData = atob(image.slice(splitIndex + 1));
+  const imageData = window.atob(image.slice(splitIndex + 1));
   let binaryData = new Array(imageData.length);
   for (let i = 0; i < binaryData.length; i++) {
     binaryData[i] = imageData.charCodeAt(i);
   }
-  const byteArray = new Uint8Array(binaryData);
+  const byteArray = new window.Uint8Array(binaryData);
   // http://stackoverflow.com/a/23956661
-  const blob = new Blob([byteArray], { type: "image/png" });
+  const blob = new window.Blob([byteArray], { type: "image/png" });
 
-  return URL.createObjectURL(blob);
+  return window.URL.createObjectURL(blob);
 }
 
 export default function* renderImage() {

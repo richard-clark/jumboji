@@ -2,55 +2,6 @@ import React, { PureComponent } from "react";
 import classNames from "classnames";
 import { connect } from "react-redux";
 
-import * as utils from "../utils.js";
-import * as effects from "redux-saga/effects";
-
-function render({
-  imageData,
-  appearanceData,
-  tileSize,
-  imageSize,
-  padding,
-  background
-}) {
-  const { metrics } = appearanceData;
-
-  let paddingAmount = padding ? tileSize * 0.2 : 0;
-  let width = tileSize * imageSize + (imageSize - 1) * paddingAmount;
-  let height = tileSize * imageSize + (imageSize - 1) * paddingAmount;
-  const TILE_SIZE = tileSize;
-
-  const emojiCanvas = utils.createCanvas(width, height);
-  document.body.appendChild(emojiCanvas);
-  const context = emojiCanvas.getContext("2d");
-  const fontSize =
-    Math.round(TILE_SIZE / metrics.actualHeightRatio * 100) / 100;
-  context.font = `${fontSize}px sans-serif`;
-
-  if (background) {
-    context.save();
-    context.fillStyle = background;
-    context.fillRect(0, 0, width, height);
-    context.restore();
-  }
-
-  for (let { x, y, item } of imageData) {
-    context.fillText(
-      item.char,
-      x * TILE_SIZE + x * paddingAmount - TILE_SIZE * metrics.xOffset,
-      y * TILE_SIZE +
-        TILE_SIZE +
-        y * paddingAmount -
-        TILE_SIZE * metrics.yOffset
-    );
-  }
-
-  const image = emojiCanvas.toDataURL("image/png");
-  emojiCanvas.remove();
-
-  return image;
-}
-
 function imagesAreEqual(a, b) {
   const areEqual =
     a.imageData === b.imageData &&
@@ -64,92 +15,77 @@ function imagesAreEqual(a, b) {
   return areEqual;
 }
 
-function imageToBlob(image) {
-  if (!image) {
-    return;
-  }
-
-  // http://stackoverflow.com/a/16245768
-  const splitIndex = image.indexOf(",");
-  const imageData = atob(image.slice(splitIndex + 1));
-  let binaryData = new Array(imageData.length);
-  for (let i = 0; i < binaryData.length; i++) {
-    binaryData[i] = imageData.charCodeAt(i);
-  }
-  const byteArray = new Uint8Array(binaryData);
-  // http://stackoverflow.com/a/23956661
-  const blob = new Blob([byteArray], { type: "image/png" });
-
-  return URL.createObjectURL(blob);
-}
-
-// export default function* renderImage() {
-//   let previousState = {};
-//
-//   while (true) {
-//     yield effects.take("*");
-//     const state = yield effects.select(s => ({
-//       emoji: s.emoji,
-//       appearanceData: s.appearanceData,
-//       imageSize: s.imageSize,
-//       variation: s.variation,
-//       imageData: s.imageData,
-//       background: s.background,
-//       padding: s.padding,
-//       tileSize: s.tileSize
-//     }));
-//     if (
-//       state.appearanceData &&
-//       state.imageData &&
-//       !imagesAreEqual(previousState, state)
-//     ) {
-//       const image = render(state);
-//       const imageUrl = imageToBlob(image);
-//       yield effects.put({ type: "UPDATE_IMAGE", data: { imageUrl } });
-//       previousState = state;
-//     }
-//   }
-// }
-
 class Img extends PureComponent {
   constructor(props) {
     super(props);
     this.element = null;
     this.canvas = null;
+    this.image = null;
     this.initiallyRendered = false;
     this.setElement = element => {
       if (element && element !== this.element) {
         this.element = element;
         const canvas = document.createElement("canvas");
         canvas.className = "img-container__img";
-        this.element.innerHTML = "";
+        // this.element.innerHTML = "";
         this.element.appendChild(canvas);
         this.canvas = canvas;
         if (this.props.apperanceData && this.props.imageData) {
           this.renderImage();
         }
+        this.image = document.createElement("img");
+        this.image.className = "img-container__img";
+        this.element.appendChild(this.image);
       }
     };
     this.version = 1;
     this.index = 0;
+    this.state = {
+      renderProgress: 0
+    };
+  }
+  componentDidMount() {
+    window.addEventListener("resize", () => {
+      window.requestAnimationFrame(() => {
+        if (this.element) {
+          this.canvas.style.display = null;
+          this.image.style.display = "none";
+          this.setState({ renderProgress: 0 });
+
+          const bounds = this.element.getBoundingClientRect();
+          const boundingSize = Math.min(bounds.width, bounds.height);
+
+          this.image.style.width = boundingSize + "px";
+          this.image.style.height = boundingSize + "px";
+          this.canvas.style.width = boundingSize + "px";
+          this.canvas.style.height = boundingSize + "px";
+        }
+      });
+    });
+  }
+  renderCanvasImage(version) {
+    window.requestIdleCallback(() => {
+      if (version === this.version) {
+        const image = this.canvas.toDataURL("image/png");
+        this.image.src = image;
+
+        this.image.style.display = null;
+        this.canvas.style.display = "none";
+        this.setState({ renderProgress: 1 });
+      }
+    });
   }
   renderEmoji(version) {
-    window.requestAnimationFrame(() => {
+    window.requestIdleCallback(() => {
       if (version === this.version) {
-        const {
-          imageData,
-          appearanceData,
-          tileSize,
-          imageSize,
-          padding,
-          background
-        } = this.props;
+        const { imageData, appearanceData, tileSize, padding } = this.props;
         const { metrics } = appearanceData;
 
         let paddingAmount = padding ? tileSize * 0.2 : 0;
         const TILE_SIZE = tileSize;
 
         let startIndex = this.index;
+        this.setState({ renderProgress: startIndex / imageData.length });
         let endIndex = Math.min(this.index + 100, imageData.length);
 
         const context = this.canvas.getContext("2d");
@@ -168,13 +104,14 @@ class Img extends PureComponent {
         if (endIndex < imageData.length) {
           this.index = endIndex;
           this.renderEmoji(version);
+        } else {
+          this.renderCanvasImage(version);
         }
       }
     });
   }
   renderImage() {
     const {
-      imageData,
       appearanceData,
       tileSize,
       imageSize,
@@ -182,6 +119,10 @@ class Img extends PureComponent {
       background
     } = this.props;
     const { metrics } = appearanceData;
+
+    this.canvas.style.display = null;
+    this.image.style.display = "none";
+    this.setState({ renderProgress: 0 });
 
     let paddingAmount = padding ? tileSize * 0.2 : 0;
     let width = tileSize * imageSize + (imageSize - 1) * paddingAmount;
@@ -194,8 +135,12 @@ class Img extends PureComponent {
     this.canvas.height = height;
     // this.canvas.style.width = `${width / 2}px`;
     // this.canvas.style.height = `${height / 2}px`;
-    this.canvas.style.width = (bounds.height - 20) + "px";
-    this.canvas.style.height = (bounds.height - 20) + "px";
+    const boundingSize = Math.min(bounds.width, bounds.height);
+
+    this.image.style.width = boundingSize + "px";
+    this.image.style.height = boundingSize + "px";
+    this.canvas.style.width = boundingSize + "px";
+    this.canvas.style.height = boundingSize + "px";
 
     const fontSize =
       Math.round(TILE_SIZE / metrics.actualHeightRatio * 100) / 100;
@@ -226,9 +171,32 @@ class Img extends PureComponent {
     }
   }
   render() {
+    let progressIndicator;
+    let imageStyle = {};
+
+    if (this.state.renderProgress > 0 && this.state.renderProgress < 1) {
+      imageStyle = {
+        opacity: 0.5,
+        filter: "grayscale(1)"
+      };
+      const style = {
+        width: `${this.state.renderProgress * 100}%`
+      };
+      progressIndicator = (
+        <div className="render-progress">
+          <div className="render-progress__indicator" style={style} />
+        </div>
+      );
+    }
+
     return (
-      <div className="main__content img-container" ref={this.setElement}>
-        {/* <div  /> */}
+      <div className="main__content">
+        <div
+          className="img-container"
+          ref={this.setElement}
+          style={imageStyle}
+        />
+        {progressIndicator}
       </div>
     );
   }
