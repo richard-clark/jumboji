@@ -23,11 +23,6 @@ import createSagaMiddleware from "redux-saga";
 // import StateAction$ from "./Streams/stateAction.js";
 // import WorkerClient$ from "./Streams/workerClient.js";
 
-import createHistory from "history/createBrowserHistory";
-import store from "./store.js";
-
-const history = createHistory();
-
 ReactDOM.render(<App />, document.getElementById("root"));
 
 /*

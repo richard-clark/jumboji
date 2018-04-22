@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./main.css";
 import { Provider } from "react-redux";
 import store from "./store.js";
+import "./router.js";
 
 import Nav from "./Components/Nav.js";
 import Loader from "./Components/Loader.js";

@@ -10,6 +10,16 @@ function EmptyStateButton({ children, onClick }) {
   );
 }
 
+function toStringWithSeparators(val) {
+  let str = val.toString();
+  if (val >= 0 && Math.abs(val) === val) {
+    for (let i = str.length - 3; i > 0; i -= 3) {
+      str = str.substr(0, i) + "," + str.substr(i);
+    }
+  }
+  return str;
+}
+
 function Search({ results, query, onEmojiSelected, onQueryUpdated }) {
   const resultElements = results.results.map(result => {
     return (
@@ -27,8 +37,7 @@ function Search({ results, query, onEmojiSelected, onQueryUpdated }) {
   if (results.totalResults > 19) {
     moreIndicator = (
       <p className="search-results__more-indicator">
-        {/* TODO: add thousands separators: */}
-        +{results.totalResults - 19}
+        +{toStringWithSeparators(results.totalResults - 19)}
       </p>
     );
   }

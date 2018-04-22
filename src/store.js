@@ -11,9 +11,6 @@ export const INITIAL_STATE = {
   variation: 5,
   padding: false,
   background: null,
-  // Prevents config changes from updating the route until we're certain that
-  // we've initially read the configuration from the route.
-  // parsedRouteFromConfig: false,
 
   data: [],
   searchQuery: "",
@@ -26,7 +23,12 @@ export const INITIAL_STATE = {
 
   imageData: null,
   palette: null,
-  imageUrl: null
+  imageUrl: null,
+
+  // Prevents config changes from updating the route until we're certain that
+  // we've initially read the configuration from the route.
+  // parsedRouteFromConfig: false,
+  routerStateInitialized: false
 };
 
 const ACTIONS = new Set([
@@ -133,10 +135,22 @@ function reducer(state = INITIAL_STATE, action) {
         searchResults: search(data, state.searchQuery)
       };
 
+    case "ROUTER_STATE_INITIALIZED":
+      return {
+        ...state,
+        routerStateInitialized: true
+      };
+
     case "SET_BACKGROUND":
       return {
         ...state,
         background: action.data.background
+      };
+
+    case "SET_CONFIG":
+      return {
+        ...state,
+        ...action.data
       };
 
     case "SET_EMOJI":
