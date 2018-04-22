@@ -32,50 +32,6 @@ export const INITIAL_STATE = {
   routerStateInitialized: false
 };
 
-function emojiToNameMap(data) {
-  return data.reduce(
-    (map, point) => {
-      const char = point.char;
-      const name = utils.getURLSafeName(point.name);
-      map.nameForChar[char] = name;
-      map.charForName[name] = char;
-      return map;
-    },
-    {
-      nameForChar: {},
-      charForName: {}
-    }
-  );
-}
-
-function search(data, query) {
-  query = query.trim().toLowerCase();
-  let results = data;
-
-  if (query.length > 0) {
-    results = data.filter(point => {
-      return (
-        query === point.char ||
-        point.name.toLowerCase().indexOf(query) >= 0 ||
-        point.keywords.some(keyword => keyword.indexOf(query) >= 0)
-      );
-    });
-  }
-
-  return {
-    hasData: data.length > 0,
-    results: results.slice(0, 19).map(point => ({
-      name: point.name,
-      emoji: point.char
-    })),
-    totalResults: results.length
-  };
-}
-
-function filterUnsupported(data, appearanceData) {
-  return data.filter(point => appearanceData.data[point.char].supported);
-}
-
 function reducer(state = INITIAL_STATE, action) {
   switch (action.type) {
     case "CLOSE_DROPDOWN":
@@ -98,14 +54,14 @@ function reducer(state = INITIAL_STATE, action) {
 
     case "LOAD_DATA_SUCCESS":
       const appearanceData = utils.getData(action.data.data);
-      const data = filterUnsupported(action.data.data, appearanceData);
+      const data = utils.filterUnsupported(action.data.data, appearanceData);
       return {
         ...state,
         initialLoading: false,
         data,
         appearanceData,
-        emojiToNameMap: emojiToNameMap(data),
-        searchResults: search(data, state.searchQuery)
+        emojiToNameMap: utils.emojiToNameMap(data),
+        searchResults: utils.search(data, state.searchQuery)
       };
 
     case "RENDER_COMPLETE":
@@ -184,7 +140,7 @@ function reducer(state = INITIAL_STATE, action) {
       return {
         ...state,
         searchQuery: action.data.query,
-        searchResults: search(state.data, action.data.query)
+        searchResults: utils.search(state.data, action.data.query)
       };
 
     case "WORKER_COMPLETE":
@@ -221,18 +177,5 @@ const store = createStore(
   composeEnhancers(applyMiddleware(sagaMiddleware))
 );
 sagaMiddleware.run(sagas);
-
-document.addEventListener("DOMContentLoaded", () => {
-  window.setTimeout(() => {
-    store.dispatch({ type: "DOCUMENT_READY" });
-  }, 200);
-});
-
-document.addEventListener("keyup", e => {
-  if (e.keyCode === 27) {
-    e.preventDefault();
-    store.dispatch({ type: "CLOSE_DROPDOWN" });
-  }
-});
 
 export default store;
