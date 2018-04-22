@@ -1,7 +1,6 @@
 import React from "react";
 import Icon from "./Icon.js";
 import { connect } from "react-redux";
-import DropdownContent from "./DropdownContent.js";
 
 function EmptyStateButton({ children, onClick }) {
   return (
@@ -11,7 +10,7 @@ function EmptyStateButton({ children, onClick }) {
   );
 }
 
-function Search({ results, query, onEmojiSelected, onClose, onQueryUpdated }) {
+function Search({ results, query, onEmojiSelected, onQueryUpdated }) {
   const resultElements = results.results.map(result => {
     return (
       <button
@@ -42,7 +41,7 @@ function Search({ results, query, onEmojiSelected, onClose, onQueryUpdated }) {
   }
 
   return (
-    <DropdownContent onClose={onClose}>
+    <div>
       <div className="dropdown-group dropdown-group--no-padding">
         <input
           className="input search-input"
@@ -56,7 +55,7 @@ function Search({ results, query, onEmojiSelected, onClose, onQueryUpdated }) {
         {moreIndicator}
         {emptyState}
       </div>
-    </DropdownContent>
+    </div>
   );
 }
 

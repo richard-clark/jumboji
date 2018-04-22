@@ -184,7 +184,6 @@ export function getData(data) {
   const missingGlyphPixelData = getPixelDataForChar(String.fromCodePoint(0x124AB), metrics, 8);
   const missingGlyphHash = getHash(missingGlyphPixelData);
   const MAX_CHAR_WIDTH = getMaxCharWidth();
-  console.log(window.navigator.userAgent, MAX_CHAR_WIDTH);
 
   const dataMap = data.reduce((map, point, index) => {
 

@@ -53,7 +53,6 @@ function objectValues(obj) {
 }
 
 function* generateDataImpl() {
-  console.log("generate data");
   const { appearanceData, variation, emoji, imageSize } = yield effects.select(
     s => s
   );
@@ -79,14 +78,6 @@ function* generateDataImpl() {
 }
 
 function statesAreEqual(a, b) {
-  console.log(
-    (a.appearanceData ? a.appearanceData.metrics : null) ===
-      (b.appearanceData ? b.appearanceData.metrics : null),
-    a.emoji === b.emoji,
-    a.imageSize === b.imageSize,
-    a.variation === b.variation
-  );
-
   const areEqual =
     (a.appearanceData ? a.appearanceData.metrics : null) ===
       (b.appearanceData ? b.appearanceData.metrics : null) &&
@@ -102,21 +93,13 @@ function* generateData() {
   // let apperanceData, emoji, imageSize, variation;
   while (true) {
     yield effects.take("*");
-    console.log("take");
     const state = yield effects.select(s => ({
       emoji: s.emoji,
       appearanceData: s.appearanceData,
       imageSize: s.imageSize,
       variation: s.variation
     }));
-    console.log(
-      "state",
-      state,
-      state.appearanceData,
-      statesAreEqual(previousState, state)
-    );
     if (state.appearanceData && !statesAreEqual(previousState, state)) {
-      console.log("would update");
       yield effects.call(generateDataImpl);
       previousState = state;
     }

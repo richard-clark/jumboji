@@ -166,8 +166,7 @@ function reducer(state = INITIAL_STATE, action) {
     case "SHOW_DROPDOWN":
       return {
         ...state,
-        visibleDropdown:
-          action.data.name === state.visibleDropdown ? null : action.data.name
+        visibleDropdown: action.data.name
       };
 
     case "TOGGLE_FULL_SIZE":

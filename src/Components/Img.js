@@ -118,7 +118,6 @@ class Img extends PureComponent {
     this.canvas = null;
     this.initiallyRendered = false;
     this.setElement = element => {
-      console.log("set element");
       if (element && element !== this.element) {
         this.element = element;
         const canvas = document.createElement("canvas");
@@ -174,7 +173,6 @@ class Img extends PureComponent {
     });
   }
   renderImage() {
-    console.log("render image");
     const {
       imageData,
       appearanceData,
@@ -191,7 +189,6 @@ class Img extends PureComponent {
     const TILE_SIZE = tileSize;
 
     const bounds = this.element.getBoundingClientRect();
-    console.log(bounds);
 
     this.canvas.width = width;
     this.canvas.height = height;
@@ -216,7 +213,6 @@ class Img extends PureComponent {
     this.renderEmoji(this.version);
   }
   componentDidUpdate(lastProps) {
-    console.log("component updated");
     if (
       this.props.appearanceData &&
       this.props.imageData &&
@@ -224,7 +220,6 @@ class Img extends PureComponent {
     ) {
       this.version++;
       this.index = 0;
-      console.log("would render");
       if (this.canvas) {
         this.renderImage();
       }

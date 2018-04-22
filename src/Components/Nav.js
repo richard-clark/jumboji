@@ -7,7 +7,6 @@ import { connect } from "react-redux";
 import convert from "color-convert";
 import TooltipContainer from "./TooltipContainer.js";
 import IconButton from "./IconButton.js";
-import DropdownContent from "./DropdownContent.js";
 
 import menuConfig from "./menuConfig.js";
 import menuComponent from "./menuComponent.js";
@@ -50,12 +49,12 @@ function renderSearch() {
 
 function renderMenu() {
   return (
-    <DropdownContent>
+    <div>
       <DropdownSize />
       <DropdownBackground />
       <DropdownPadding />
       <DropdownVariation />
-    </DropdownContent>
+    </div>
   );
 }
 
@@ -64,6 +63,7 @@ function Nav({
   initialLoading,
   imageUrl,
   emoji,
+  onCloseDropdown,
   onRandomizeEmoji,
   onShowDropdown,
   visibleDropdown
@@ -88,6 +88,7 @@ function Nav({
             pullRight={true}
             className="dropdown--search-dropdown"
             renderContent={renderSearch}
+            onClose={onCloseDropdown}
           >
             <SearchToggleButton onClick={() => onShowDropdown("search")}>
               {emoji}
@@ -105,6 +106,7 @@ function Nav({
           <Dropdown
             visible={visibleDropdown === "settings"}
             renderContent={renderMenu}
+            onClose={onCloseDropdown}
           >
             <TooltipContainer tooltip="More Settings">
               <IconButton
@@ -130,6 +132,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
+    onCloseDropdown() {
+      dispatch({ type: "CLOSE_DROPDOWN" });
+    },
     onRandomizeEmoji() {
       dispatch({ type: "RANDOMIZE_EMOJI" });
     },
