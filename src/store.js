@@ -20,8 +20,9 @@ export const INITIAL_STATE = {
   visibleDropdown: null,
   appearanceData: null,
   emojiToNameMap: null,
+  workerProgress: 0,
 
-  imageData: null,
+  imageData: [],
   palette: null,
   imageUrl: null,
 
@@ -179,12 +180,20 @@ function reducer(state = INITIAL_STATE, action) {
         ...state,
         workerLoading: false,
         palette: action.data.palette,
-        imageData: action.data.imageData
+        imageData: action.data.imageData,
+        workerProgress: 1
+      };
+
+    case "WORKER_UPDATED":
+      return {
+        ...state,
+        workerProgress: action.data.workerProgress
       };
 
     case "WORKER_STARTED":
       return {
         ...state,
+        workerProgress: 0,
         workerLoading: true
       };
 

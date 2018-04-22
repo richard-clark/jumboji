@@ -7,12 +7,18 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  transition: opacity 0.3s ease-in-out;
 
   .img-container__img {
     display: block;
     margin-left: auto;
     margin-right: auto;
     max-width: none;
+  }
+
+  &.img-container--loading {
+    opacity: 0.5;
+    filter: grayscale(1);
   }
 
   &.img-container--full-size {
@@ -24,7 +30,6 @@
       max-height: none;
     }
   }
-
 }
 
 .render-progress {
@@ -41,5 +46,5 @@
 .render-progress__indicator {
   height: 100%;
   background-color: $black;
-  // border: 2px solid black;
+  transform: width 0.3s ease-in-out;
 }

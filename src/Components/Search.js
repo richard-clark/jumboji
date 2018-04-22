@@ -1,6 +1,6 @@
-import React from "react";
-import Icon from "./Icon.js";
+import React, { PureComponent } from "react";
 import { connect } from "react-redux";
+import Icon from "./Icon.js";
 
 function EmptyStateButton({ children, onClick }) {
   return (
@@ -20,52 +20,73 @@ function toStringWithSeparators(val) {
   return str;
 }
 
-function Search({ results, query, onEmojiSelected, onQueryUpdated }) {
-  const resultElements = results.results.map(result => {
+class Search extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.input = null;
+    this.setInput = element => {
+      if (element && element !== this.element) {
+        this.element = element;
+        this.element.focus();
+      }
+    };
+  }
+  render() {
+    const { results, query, onEmojiSelected, onQueryUpdated } = this.props;
+
+    const resultElements = results.results.map(result => {
+      return (
+        <button
+          className="search-results__result-btn"
+          key={result.name}
+          onClick={() => onEmojiSelected(result.emoji)}
+        >
+          {result.emoji}
+        </button>
+      );
+    });
+
+    let moreIndicator;
+    if (results.totalResults > 19) {
+      moreIndicator = (
+        <p className="search-results__more-indicator">
+          +{toStringWithSeparators(results.totalResults - 19)}
+        </p>
+      );
+    }
+
+    let emptyState;
+    if (!results.hasData || results.totalResults === 0) {
+      emptyState = (
+        <EmptyStateButton onClick={() => onQueryUpdated("")}>
+          😞
+        </EmptyStateButton>
+      );
+    }
+
     return (
-      <button
-        className="search-results__result-btn"
-        key={result.name}
-        onClick={() => onEmojiSelected(result.emoji)}
-      >
-        {result.emoji}
-      </button>
-    );
-  });
-
-  let moreIndicator;
-  if (results.totalResults > 19) {
-    moreIndicator = (
-      <p className="search-results__more-indicator">
-        +{toStringWithSeparators(results.totalResults - 19)}
-      </p>
+      <div>
+        <div className="dropdown-group dropdown-group--no-padding">
+          <input
+            className="input search-input"
+            placeholder="Search for something"
+            value={query}
+            onChange={e => onQueryUpdated(e.target.value)}
+            ref={this.setInput}
+          />
+        </div>
+        <div className="dropdown-group search-results dropdown-group--no-padding">
+          {resultElements}
+          {moreIndicator}
+          {emptyState}
+        </div>
+        <p className="dropdown__info">
+          Jumboji uses the emoji that are available on your system, so results
+          will vary from device to device.
+        </p>
+      </div>
     );
   }
-
-  let emptyState;
-  if (!results.hasData || results.totalResults === 0) {
-    emptyState = (
-      <EmptyStateButton onClick={() => onQueryUpdated("")}>😞</EmptyStateButton>
-    );
-  }
-
-  return (
-    <div>
-      <div className="dropdown-group dropdown-group--no-padding">
-        <input
-          className="input search-input"
-          placeholder="Search for something"
-          value={query}
-          onChange={e => onQueryUpdated(e.target.value)}
-        />
-      </div>
-      <div className="dropdown-group search-results dropdown-group--no-padding">
-        {resultElements}
-        {moreIndicator}
-        {emptyState}
-      </div>
-    </div>
-  );
 }
 
 function mapStateToProps(state) {

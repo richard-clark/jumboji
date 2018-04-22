@@ -8,10 +8,8 @@ function imagesAreEqual(a, b) {
     (a.appearanceData ? a.appearanceData.metrics : null) ===
       (b.appearanceData ? b.appearanceData.metrics : null) &&
     a.tileSize === b.tileSize &&
-    a.imageSize === b.imageSize &&
     a.padding === b.padding &&
-    a.background === b.background &&
-    a.variation === b.variation;
+    a.background === b.background;
   return areEqual;
 }
 
@@ -27,7 +25,7 @@ class Img extends PureComponent {
         this.element = element;
         const canvas = document.createElement("canvas");
         canvas.className = "img-container__img";
-        // this.element.innerHTML = "";
+        this.element.innerHTML = "";
         this.element.appendChild(canvas);
         this.canvas = canvas;
         if (this.props.apperanceData && this.props.imageData) {
@@ -43,34 +41,38 @@ class Img extends PureComponent {
     this.state = {
       renderProgress: 0
     };
-  }
-  componentDidMount() {
-    window.addEventListener("resize", () => {
+    this.onResize = () => {
       window.requestAnimationFrame(() => {
         if (this.element) {
-          this.canvas.style.display = null;
-          this.image.style.display = "none";
-          this.setState({ renderProgress: 0 });
-
           const bounds = this.element.getBoundingClientRect();
           const boundingSize = Math.min(bounds.width, bounds.height);
-
           this.image.style.width = boundingSize + "px";
           this.image.style.height = boundingSize + "px";
           this.canvas.style.width = boundingSize + "px";
           this.canvas.style.height = boundingSize + "px";
         }
       });
-    });
+    };
+  }
+  componentDidMount() {
+    window.addEventListener("resize", this.onResize);
+  }
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.onResize);
   }
   renderCanvasImage(version) {
     window.requestIdleCallback(() => {
       if (version === this.version) {
-        const image = this.canvas.toDataURL("image/png");
-        this.image.src = image;
-
-        this.image.style.display = null;
         this.canvas.style.display = "none";
+
+        // Image will be invalid (show broken icon) if canvas width/height are
+        // zero, so just keep image hidden in this case.
+        if (this.canvas.width > 0 && this.canvas.height > 0) {
+          const image = this.canvas.toDataURL("image/png");
+          this.image.src = image;
+          this.image.style.display = null;
+        }
+
         this.setState({ renderProgress: 1 });
       }
     });
@@ -114,9 +116,9 @@ class Img extends PureComponent {
     const {
       appearanceData,
       tileSize,
-      imageSize,
       padding,
-      background
+      background,
+      imageData
     } = this.props;
     const { metrics } = appearanceData;
 
@@ -124,6 +126,7 @@ class Img extends PureComponent {
     this.image.style.display = "none";
     this.setState({ renderProgress: 0 });
 
+    const imageSize = Math.sqrt(imageData.length);
     let paddingAmount = padding ? tileSize * 0.2 : 0;
     let width = tileSize * imageSize + (imageSize - 1) * paddingAmount;
     let height = tileSize * imageSize + (imageSize - 1) * paddingAmount;
@@ -133,8 +136,6 @@ class Img extends PureComponent {
 
     this.canvas.width = width;
     this.canvas.height = height;
-    // this.canvas.style.width = `${width / 2}px`;
-    // this.canvas.style.height = `${height / 2}px`;
     const boundingSize = Math.min(bounds.width, bounds.height);
 
     this.image.style.width = boundingSize + "px";
@@ -158,11 +159,7 @@ class Img extends PureComponent {
     this.renderEmoji(this.version);
   }
   componentDidUpdate(lastProps) {
-    if (
-      this.props.appearanceData &&
-      this.props.imageData &&
-      !imagesAreEqual(lastProps, this.props)
-    ) {
+    if (this.props.appearanceData && !imagesAreEqual(lastProps, this.props)) {
       this.version++;
       this.index = 0;
       if (this.canvas) {
@@ -172,15 +169,23 @@ class Img extends PureComponent {
   }
   render() {
     let progressIndicator;
-    let imageStyle = {};
+    const { renderProgress } = this.state;
+    const { workerProgress } = this.props;
 
-    if (this.state.renderProgress > 0 && this.state.renderProgress < 1) {
-      imageStyle = {
-        opacity: 0.5,
-        filter: "grayscale(1)"
-      };
+    let progress;
+    if (workerProgress < 1) {
+      progress = workerProgress * 0.2;
+    } else if (renderProgress < 1) {
+      progress = 0.2 + renderProgress * 0.8;
+    }
+
+    let containerClasses = classNames("img-container", {
+      "img-container--loading": progress > 0 && progress < 1
+    });
+
+    if (progress > 0 && progress < 1) {
       const style = {
-        width: `${this.state.renderProgress * 100}%`
+        width: `${progress * 100}%`
       };
       progressIndicator = (
         <div className="render-progress">
@@ -191,11 +196,7 @@ class Img extends PureComponent {
 
     return (
       <div className="main__content">
-        <div
-          className="img-container"
-          ref={this.setElement}
-          style={imageStyle}
-        />
+        <div className={containerClasses} ref={this.setElement} />
         {progressIndicator}
       </div>
     );
@@ -225,12 +226,12 @@ function mapStateToProps(s) {
   return {
     emoji: s.emoji,
     appearanceData: s.appearanceData,
-    imageSize: s.imageSize,
     variation: s.variation,
     imageData: s.imageData,
     background: s.background,
     padding: s.padding,
-    tileSize: s.tileSize
+    tileSize: s.tileSize,
+    workerProgress: s.workerProgress
   };
 }
 

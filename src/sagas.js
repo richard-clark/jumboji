@@ -3,8 +3,7 @@ import * as effects from "redux-saga/effects";
 import "whatwg-fetch";
 import * as utils from "./utils.js";
 
-import generateData from "./sagas/generateData.js";
-import renderImage from "./sagas/renderImage.js";
+// import generateData from "./sagas/generateData.js";
 
 function sleep(delay) {
   return new Promise(resolve => setTimeout(resolve, delay));
@@ -39,7 +38,7 @@ function* sagas() {
     effects.takeEvery("DOCUMENT_READY", getData),
     effects.takeEvery("RANDOMIZE_EMOJI", randomizeEmoji),
     // effects.throttle(1000, "*", generateData)
-    effects.fork(generateData)
+    // effects.fork(generateData)
     // effects.fork(renderImage)
   ]);
 }

@@ -27,7 +27,7 @@ function Loader({ loading }) {
 
 function mapStateToProps(state) {
   return {
-    loading: state.initialLoading || state.workerLoading
+    loading: state.initialLoading
   };
 }
 
