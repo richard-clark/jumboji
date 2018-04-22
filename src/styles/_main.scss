@@ -24,10 +24,10 @@
   .main__content {
     box-sizing: border-box;
     flex-grow: 1;
-    padding: $main-vertical-padding 20px;
     display: flex;
     justify-content: center;
     align-items: stretch;
+    overflow: hidden;
   }
 
   .main__loader {

@@ -54,11 +54,12 @@ class Img extends PureComponent {
     this.version = 1;
     this.index = 0;
     this.state = {
-      renderProgress: 0
+      renderProgress: 0,
+      fullSize: true
     };
     this.onResize = () => {
       window.requestAnimationFrame(() => {
-        if (this.element) {
+        if (this.element && !this.state.fullSize) {
           const bounds = this.element.getBoundingClientRect();
           const boundingSize = Math.min(bounds.width, bounds.height);
           this.image.style.width = boundingSize + "px";
@@ -87,10 +88,7 @@ class Img extends PureComponent {
           this.image.src = image;
           this.image.style.display = null;
 
-          console.log("complete");
-          const start = new Date();
           const blob = imageToDataURL(image);
-          console.log("done, elapsed:", new Date() - start);
           this.props.onRenderComplete(blob);
         }
 
@@ -142,6 +140,7 @@ class Img extends PureComponent {
       imageData
     } = this.props;
     const { metrics } = appearanceData;
+    const { fullSize } = this.state;
 
     this.canvas.style.display = null;
     this.image.style.display = "none";
@@ -150,20 +149,24 @@ class Img extends PureComponent {
 
     const imageSize = Math.sqrt(imageData.length);
     let paddingAmount = padding ? tileSize * 0.2 : 0;
-    let width = tileSize * imageSize + (imageSize - 1) * paddingAmount;
-    let height = tileSize * imageSize + (imageSize - 1) * paddingAmount;
+    let totalImageSize = tileSize * imageSize + (imageSize - 1) * paddingAmount;
     const TILE_SIZE = tileSize;
 
-    const bounds = this.element.getBoundingClientRect();
+    let size;
+    if (fullSize) {
+      size = totalImageSize;
+    } else {
+      const bounds = this.element.getBoundingClientRect();
+      size = Math.min(bounds.width, bounds.height);
+    }
 
-    this.canvas.width = width;
-    this.canvas.height = height;
-    const boundingSize = Math.min(bounds.width, bounds.height);
+    this.canvas.width = totalImageSize;
+    this.canvas.height = totalImageSize;
 
-    this.image.style.width = boundingSize + "px";
-    this.image.style.height = boundingSize + "px";
-    this.canvas.style.width = boundingSize + "px";
-    this.canvas.style.height = boundingSize + "px";
+    this.image.style.width = size + "px";
+    this.image.style.height = size + "px";
+    this.canvas.style.width = size + "px";
+    this.canvas.style.height = size + "px";
 
     const fontSize =
       Math.round(TILE_SIZE / metrics.actualHeightRatio * 100) / 100;
@@ -174,13 +177,13 @@ class Img extends PureComponent {
     if (background) {
       context.save();
       context.fillStyle = background;
-      context.fillRect(0, 0, width, height);
+      context.fillRect(0, 0, totalImageSize, totalImageSize);
       context.restore();
     }
 
     this.renderEmoji(this.version);
   }
-  componentDidUpdate(lastProps) {
+  componentDidUpdate(lastProps, lastState) {
     if (this.props.appearanceData && !imagesAreEqual(lastProps, this.props)) {
       this.version++;
       this.index = 0;
@@ -188,10 +191,26 @@ class Img extends PureComponent {
         this.renderImage();
       }
     }
+    if (lastState.fullSize !== this.state.fullSize) {
+      // TODO: update size
+      let size;
+      if (this.state.fullSize) {
+        size = null;
+      } else {
+        const bounds = this.element.parentElement.getBoundingClientRect();
+        const boundingSize = Math.min(bounds.width, bounds.height);
+        size = `${boundingSize}px`;
+      }
+
+      this.image.style.width = size;
+      this.image.style.height = size;
+      this.canvas.style.width = size;
+      this.canvas.style.height = size;
+    }
   }
   render() {
     let progressIndicator;
-    const { renderProgress } = this.state;
+    const { renderProgress, fullSize } = this.state;
     const { workerProgress } = this.props;
 
     let progress;
@@ -202,7 +221,8 @@ class Img extends PureComponent {
     }
 
     let containerClasses = classNames("img-container", {
-      "img-container--loading": progress > 0 && progress < 1
+      "img-container--loading": progress > 0 && progress < 1,
+      "img-container--full-size": fullSize
     });
 
     if (progress > 0 && progress < 1) {
@@ -217,8 +237,13 @@ class Img extends PureComponent {
     }
 
     return (
-      <div className="main__content">
-        <div className={containerClasses} ref={this.setElement} />
+      <div
+        className="main__content"
+        onClick={() => this.setState({ fullSize: !fullSize })}
+      >
+        <div className={containerClasses}>
+          <div className="img-container__inner" ref={this.setElement} />
+        </div>
         {progressIndicator}
       </div>
     );
