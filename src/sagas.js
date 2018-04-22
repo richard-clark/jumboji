@@ -1,16 +1,12 @@
 import * as effects from "redux-saga/effects";
-// import dataUrl from "file-loader!./data.json";
 import "whatwg-fetch";
 import * as utils from "./utils.js";
-
-// import generateData from "./sagas/generateData.js";
 
 function sleep(delay) {
   return new Promise(resolve => setTimeout(resolve, delay));
 }
 
 function fetchData() {
-  // return fetch(dataUrl).then(response => response.json());
   return import("./data.json");
 }
 
@@ -36,10 +32,7 @@ function* randomizeEmoji() {
 function* sagas() {
   yield effects.all([
     effects.takeEvery("DOCUMENT_READY", getData),
-    effects.takeEvery("RANDOMIZE_EMOJI", randomizeEmoji),
-    // effects.throttle(1000, "*", generateData)
-    // effects.fork(generateData)
-    // effects.fork(renderImage)
+    effects.takeEvery("RANDOMIZE_EMOJI", randomizeEmoji)
   ]);
 }
 

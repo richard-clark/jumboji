@@ -13,16 +13,6 @@ function DropdownButton({ selected, onClick, icon, tooltip }) {
       <span className="dropdown-btn__text">{tooltip}</span>
     </button>
   );
-
-  // return h("button.dropdown-btn", {
-  //   class: {
-  //     "dropdown-btn--selected": item.selected
-  //   },
-  //   dataset: item.data || {}
-  // }, [
-  //   h("i.material-icons.dropdown-btn__icon", {}, item.icon),
-  //   h("span.dropdown-btn__text", {}, item.tooltip)
-  // ])
 }
 
 export default function DropdownMenu(props) {

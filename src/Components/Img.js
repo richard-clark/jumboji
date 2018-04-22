@@ -55,20 +55,27 @@ class Img extends PureComponent {
     this.index = 0;
     this.state = {
       renderProgress: 0,
-      fullSize: true
+      fullSize: false
     };
     this.onResize = () => {
       window.requestAnimationFrame(() => {
         if (this.element && !this.state.fullSize) {
-          const bounds = this.element.getBoundingClientRect();
-          const boundingSize = Math.min(bounds.width, bounds.height);
-          this.image.style.width = boundingSize + "px";
-          this.image.style.height = boundingSize + "px";
-          this.canvas.style.width = boundingSize + "px";
-          this.canvas.style.height = boundingSize + "px";
+          const boundingSize = this.getBoundingSize();
+          this.setImageSize(boundingSize);
         }
       });
     };
+  }
+  getBoundingSize() {
+    const bounds = this.element.parentElement.getBoundingClientRect();
+    const boundingSize = Math.min(bounds.width - 40, bounds.height);
+    return `${boundingSize}px`;
+  }
+  setImageSize(size) {
+    this.image.style.width = size;
+    this.image.style.height = size;
+    this.canvas.style.width = size;
+    this.canvas.style.height = size;
   }
   componentDidMount() {
     window.addEventListener("resize", this.onResize);
@@ -154,19 +161,15 @@ class Img extends PureComponent {
 
     let size;
     if (fullSize) {
-      size = totalImageSize;
+      size = `${totalImageSize}px`;
     } else {
-      const bounds = this.element.getBoundingClientRect();
-      size = Math.min(bounds.width, bounds.height);
+      size = this.getBoundingSize();
     }
 
     this.canvas.width = totalImageSize;
     this.canvas.height = totalImageSize;
 
-    this.image.style.width = size + "px";
-    this.image.style.height = size + "px";
-    this.canvas.style.width = size + "px";
-    this.canvas.style.height = size + "px";
+    this.setImageSize(size);
 
     const fontSize =
       Math.round(TILE_SIZE / metrics.actualHeightRatio * 100) / 100;
@@ -192,20 +195,14 @@ class Img extends PureComponent {
       }
     }
     if (lastState.fullSize !== this.state.fullSize) {
-      // TODO: update size
       let size;
       if (this.state.fullSize) {
         size = null;
       } else {
-        const bounds = this.element.parentElement.getBoundingClientRect();
-        const boundingSize = Math.min(bounds.width, bounds.height);
-        size = `${boundingSize}px`;
+        size = this.getBoundingSize();
       }
 
-      this.image.style.width = size;
-      this.image.style.height = size;
-      this.canvas.style.width = size;
-      this.canvas.style.height = size;
+      this.setImageSize(size);
     }
   }
   render() {
@@ -250,25 +247,6 @@ class Img extends PureComponent {
   }
 }
 
-// // TODO: set .main__content
-// // TODO: onClick: toggle full size
-// function Img({ imageUrl, fullSize, onClick }) {
-//   const imgClasses = classNames("main__content", "img-container", {
-//     "img-container--full-size": fullSize
-//   });
-//
-//   let img;
-//   if (imageUrl) {
-//     img = <img className="img-container__img" src={imageUrl} />;
-//   }
-//
-//   return (
-//     <div className={imgClasses} onClick={onClick}>
-//       {img}
-//     </div>
-//   );
-// }
-
 function mapStateToProps(s) {
   return {
     emoji: s.emoji,
@@ -302,42 +280,3 @@ function mapDispatchToProps(dispatch) {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Img);
-
-// function render(imageUrl, config) {
-//
-//   let cls = ".main__content.img-container";
-//   if (config.fullSize) {
-//     cls += ".img-container--full-size";
-//   }
-//
-//   let img = "";
-//   if (imageUrl) {
-//     img = h("img.img-container__img", {
-//       key: "img-inner",
-//       props: {
-//         src: imageUrl
-//       }
-//     });
-//   }
-//
-//   let vnode = h(`div${cls}`,
-//     {dataset: {action: "toggle-full-size"}, key: "img"},
-//     img
-//   );
-//
-//   return vnode;
-// }
-//
-//
-//
-// export default function Img({imageBlob$, config$}) {
-//
-//   const dom$ = most.combine(
-//     render,
-//     imageBlob$,
-//     config$
-//   );
-//
-//   return { dom$ }
-//
-// }
