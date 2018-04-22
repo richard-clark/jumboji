@@ -7,40 +7,22 @@ import { connect } from "react-redux";
 import convert from "color-convert";
 import TooltipContainer from "./TooltipContainer.js";
 import IconButton from "./IconButton.js";
-import ConfigMenu from "./ConfigMenu.js"
+import DropdownContent from "./DropdownContent.js";
 
-// function IconButton(config) {
-//
-//   const {icon, sel, cls, selected, data, props, tooltip, disabled} = config;
-//
-//   const BASE_CLASS = {
-//     nav__btn: true,
-//     "icon-btn": true,
-//     "icon-btn--selected": selected || false,
-//     "icon-btn--disabled": disabled,
-//   };
-//
-//   const vnode = {
-//     sel: sel || "button",
-//     data: {
-//       class: {...BASE_CLASS, ...(cls || {})},
-//       props: props || {
-//         disabled: disabled || false
-//       },
-//       dataset: data || {},
-//     },
-//     children: [
-//       h("i.material-icons", {}, icon)
-//     ]
-//   }
-//
-//   if (tooltip) {
-//     return TooltipContainer({...config, trigger: vnode});
-//   } else {
-//     return vnode;
-//   }
-//
-// }
+import menuConfig from "./menuConfig.js";
+import menuComponent from "./menuComponent.js";
+import NavMenu from "./NavMenu.js";
+import DropdownMenu from "./DropdownMenu.js";
+
+const SizeMenu = menuComponent(NavMenu, menuConfig.size);
+const BackgroundMenu = menuComponent(NavMenu, menuConfig.background);
+const PaddingMenu = menuComponent(NavMenu, menuConfig.padding);
+const VariationMenu = menuComponent(NavMenu, menuConfig.variation);
+
+const DropdownSize = menuComponent(DropdownMenu, menuConfig.size);
+const DropdownBackground = menuComponent(DropdownMenu, menuConfig.background);
+const DropdownPadding = menuComponent(DropdownMenu, menuConfig.padding);
+const DropdownVariation = menuComponent(DropdownMenu, menuConfig.variation);
 
 function colorToRGBString(color) {
   return `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
@@ -66,6 +48,17 @@ function renderSearch() {
   return <Search />;
 }
 
+function renderMenu() {
+  return (
+    <DropdownContent>
+      <DropdownSize />
+      <DropdownBackground />
+      <DropdownPadding />
+      <DropdownVariation />
+    </DropdownContent>
+  );
+}
+
 function Nav({
   palette,
   initialLoading,
@@ -89,7 +82,7 @@ function Nav({
   return (
     <nav className={navClasses} style={style}>
       <div className="nav__inner">
-        <div className="nav__group">
+        <div className="nav__group" key="search">
           <Dropdown
             visible={visibleDropdown === "search"}
             pullRight={true}
@@ -104,7 +97,23 @@ function Nav({
             <IconButton icon="refresh" onClick={onRandomizeEmoji} />
           </TooltipContainer>
         </div>
-        <ConfigMenu className="nav__group" />
+        <SizeMenu />
+        <BackgroundMenu />
+        <PaddingMenu />
+        <VariationMenu />
+        <div className="nav__group" key="menu">
+          <Dropdown
+            visible={visibleDropdown === "settings"}
+            renderContent={renderMenu}
+          >
+            <TooltipContainer tooltip="More Settings">
+              <IconButton
+                icon="more_vert"
+                onClick={() => onShowDropdown("settings")}
+              />
+            </TooltipContainer>
+          </Dropdown>
+        </div>
       </div>
     </nav>
   );

@@ -1,6 +1,7 @@
 import React from "react";
 import Icon from "./Icon.js";
 import { connect } from "react-redux";
+import DropdownContent from "./DropdownContent.js";
 
 function EmptyStateButton({ children, onClick }) {
   return (
@@ -9,12 +10,6 @@ function EmptyStateButton({ children, onClick }) {
     </button>
   );
 }
-
-// function EmptyStateButton(emoji) {
-//   return h("button.search-results__empty-state-btn", {
-//     dataset: {trigger: "search-result", emoji}
-//   }, emoji);
-// }
 
 function Search({ results, query, onEmojiSelected, onClose, onQueryUpdated }) {
   const resultElements = results.results.map(result => {
@@ -47,10 +42,7 @@ function Search({ results, query, onEmojiSelected, onClose, onQueryUpdated }) {
   }
 
   return (
-    <div className="dropdown__content">
-      <button className="dropdown__close" onClick={onClose}>
-        <Icon type="close" />
-      </button>
+    <DropdownContent onClose={onClose}>
       <div className="dropdown-group dropdown-group--no-padding">
         <input
           className="input search-input"
@@ -64,7 +56,7 @@ function Search({ results, query, onEmojiSelected, onClose, onQueryUpdated }) {
         {moreIndicator}
         {emptyState}
       </div>
-    </div>
+    </DropdownContent>
   );
 }
 
@@ -94,64 +86,3 @@ function mapDispatchToProps(dispatch) {
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Search);
-
-// function dom(results, { query }) {
-//   // const resultElements = results.results.map((result) => {
-//   //   return h("button.search-results__result-btn", {
-//   //     key: result.name,
-//   //     dataset: {trigger: "search-result", emoji: result.emoji }
-//   //   }, result.emoji);
-//   // });
-//   // let moreIndicator = "";
-//   // if (results.totalResults > 19) {
-//   //   moreIndicator = h("p.search-results__more-indicator",
-//   //     {},
-//   //     `+${(results.totalResults-19).toLocaleString()}`
-//   //   );
-//   // }
-//   // let emptyState = "";
-//   // if (!results.hasData || results.totalResults === 0) {
-//   //   emptyState = EmptyStateButton("😞");
-//   // }
-//   // const closeButton = h("button.dropdown__close", {
-//   //   dataset: {trigger: "close-dropdown"}
-//   // },
-//   //   h("i.material-icons", {}, "close")
-//   // );
-//   //
-//   // const modal = h("div.dropdown__content", {}, [
-//   //   closeButton,
-//   //   h("div.dropdown-group.dropdown-group--no-padding", {}, [
-//   //     h("input.input.search-input", {
-//   //       props: {
-//   //         placeholder: `Search for something`,
-//   //         value: query
-//   //       }
-//   //     })
-//   //   ]),
-//   //   h("div.dropdown-group.search-results.dropdown-group--no-padding", {}, [
-//   //     ...resultElements,
-//   //     moreIndicator,
-//   //     emptyState
-//   //   ])
-//   // ]);
-//   //
-//   // return modal;
-// }
-
-// export default function Search({
-//   dataMatchingSearch$,
-//   searchParams$,
-//   visibleDropdown$
-// }) {
-//   const dom$ = most.combine(dom, dataMatchingSearch$, searchParams$);
-//
-//   visibleDropdown$
-//     .map(visible => visible === "search")
-//     .skipRepeats()
-//     .filter(isVisible => true)
-//     .delay(100)
-//     .observe(() => document.querySelector(".search-input").select());
-//
-//   return { dom$ };
-// }
