@@ -1,18 +1,3 @@
-import * as utils from "./utils.js";
-import * as most from "most";
-
-export const INITIAL_CONFIG = {
-  emoji: "🌈",
-  fullSize: false,
-  imageSize: 32,
-  tileSize: 32,
-  variation: 5,
-  padding: false,
-  background: null,
-  // Prevents config changes from updating the route until we're certain that
-  // we've initially read the configuration from the route.
-  parsedRouteFromConfig: false
-};
 
 /*
 Since these actions are set on DOM elements with dataset (which needs to have
@@ -40,14 +25,6 @@ export function actionReducer(state, event) {
     default:
       return state;
   }
-}
-
-export function getRandomEmoji(data) {
-  const point = data[utils.rand(data.length)];
-  return {
-    action: "set-emoji",
-    emoji: point.char
-  };
 }
 
 export function objectsAreEqual(obj1, obj2) {

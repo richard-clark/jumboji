@@ -1,21 +1,34 @@
-import {h} from "snabbdom/h";
-import * as most from "most";
+import React from "react";
+import {connect} from "react-redux";
 
-export default function Loader({loading$}) {
+function Loader({ loading }) {
+  if (!loading) {
+    return null;
+  }
 
-  const dom$ = loading$.map((loading) => {
-    if (!loading) { return ""; }
+  const children = Array(9)
+    .fill(0)
+    .map((_, index) => index + 1)
+    .map(index => {
+      return (
+        <div
+          className={`cube-loader__cube cube-loader__cube--${index}`}
+          key={index}
+        />
+      );
+    });
 
-    const elements = Array(9).fill(0).map((_, index) => index + 1)
-      .map((index) => h(`div.cube-loader__cube.cube-loader__cube--${index}`, {key: `loader-${index}`}));
-
-    return h("div.main__loader.main__loader--loading", {key: "loader"},
-      h("div.cube-loader", {},
-        elements
-      )
-    );
-  });
-
-  return { dom$ }
-
+  return (
+    <div className="main__loader main__loader--loading">
+      <div className="cube-loader">{children}</div>
+    </div>
+  );
 }
+
+function mapStateToProps(state) {
+  return {
+    loading: state.initialLoading || state.workerLoading
+  };
+}
+
+export default connect(mapStateToProps)(Loader);
