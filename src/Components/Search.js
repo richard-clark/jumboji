@@ -2,10 +2,10 @@ import React from "react";
 import Icon from "./Icon.js";
 import { connect } from "react-redux";
 
-function EmptyStateButton({ emoji, onClick }) {
+function EmptyStateButton({ children, onClick }) {
   return (
     <button className="search-results__empty-state-btn" onClick={onClick}>
-      {emoji}
+      {children}
     </button>
   );
 }

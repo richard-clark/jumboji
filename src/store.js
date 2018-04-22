@@ -3,7 +3,7 @@ import createSagaMiddleware from "redux-saga";
 import * as utils from "./utils.js";
 import sagas from "./sagas.js";
 
-const initialState = {
+export const INITIAL_STATE = {
   emoji: "🌈",
   fullSize: false,
   imageSize: 32,
@@ -101,7 +101,7 @@ function filterUnsupported(data, appearanceData) {
   return data.filter(point => appearanceData.data[point.char].supported);
 }
 
-function reducer(state = initialState, action) {
+function reducer(state = INITIAL_STATE, action) {
   switch (action.type) {
     case "CLOSE_DROPDOWN":
       return {

@@ -1,17 +1,16 @@
 import * as configUtils from "../configUtils.js";
 import * as most from "most";
 
-export function configToPath(config, emojiToNameMap) {
+export function encodePath({emojiToNameMap, emoji, imageSize, background, variation, padding}) {
   let components = [];
 
-  components.push(emojiToNameMap.nameForChar[config.emoji]);
+  components.push(emojiToNameMap.nameForChar[emoji]);
 
-  if (config.imageSize !== configUtils.INITIAL_CONFIG.imageSize) {
-    components.push(`is-${config.imageSize}`);
+  if (imageSize !== INITIAL_STATE.imageSize) {
+    components.push(`is-${imageSize}`);
   }
 
-  if (config.background) {
-    let background = config.background;
+  if (background) {
     const bgWithHashMatch = background.match(/^#(.*)$/);
     if (bgWithHashMatch) {
       background = bgWithHashMatch[1];
@@ -19,11 +18,11 @@ export function configToPath(config, emojiToNameMap) {
     components.push(`bg-${background}`)
   }
 
-  if (config.variation !== configUtils.INITIAL_CONFIG.variation) {
-    components.push(`n-${config.variation}`);
+  if (variation !== INITIAL_STATE.variation) {
+    components.push(`n-${variation}`);
   }
 
-  if (config.padding) {
+  if (padding) {
     components.push("padding");
   }
 

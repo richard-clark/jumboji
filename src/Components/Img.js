@@ -64,25 +64,6 @@ function imagesAreEqual(a, b) {
   return areEqual;
 }
 
-// // When anything that affects the size changes, we'll attempt to render the
-// // existing pixel data using the new configuration, resulting in a flicker of
-// // an image that is too small or too large. This watches for changes to the
-// // size of the image, and clears it, so we don't render anything.
-// function* clearAndRender(dataToRender, appearance, config, previousConfig) {
-//   if (!dataToRender.data) {
-//     yield null;
-//   } else {
-//     const sizeChanged =
-//       previousConfig &&
-//       (config.tileSize !== previousConfig.tileSize ||
-//         config.imageSize !== previousConfig.imageSize ||
-//         config.variation !== previousConfig.variation);
-//     if (!sizeChanged) {
-//       yield renderImage(dataToRender.data, appearance, config);
-//     }
-//   }
-// }
-
 function imageToBlob(image) {
   if (!image) {
     return;
@@ -209,10 +190,15 @@ class Img extends PureComponent {
     let height = tileSize * imageSize + (imageSize - 1) * paddingAmount;
     const TILE_SIZE = tileSize;
 
+    const bounds = this.element.getBoundingClientRect();
+    console.log(bounds);
+
     this.canvas.width = width;
     this.canvas.height = height;
-    this.canvas.style.width = `${width / 2}px`;
-    this.canvas.style.height = `${height / 2}px`;
+    // this.canvas.style.width = `${width / 2}px`;
+    // this.canvas.style.height = `${height / 2}px`;
+    this.canvas.style.width = (bounds.height - 20) + "px";
+    this.canvas.style.height = (bounds.height - 20) + "px";
 
     const fontSize =
       Math.round(TILE_SIZE / metrics.actualHeightRatio * 100) / 100;
@@ -246,8 +232,8 @@ class Img extends PureComponent {
   }
   render() {
     return (
-      <div className="main__content img-container">
-        <div ref={this.setElement} />
+      <div className="main__content img-container" ref={this.setElement}>
+        {/* <div  /> */}
       </div>
     );
   }
