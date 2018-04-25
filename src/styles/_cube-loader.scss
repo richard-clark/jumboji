@@ -24,11 +24,11 @@
       font-size: 150%;
     }
 
-    width: 33%;
+    animation: cube-loader 1.3s infinite ease-in-out;
     height: 33%;
     float: left;
     position: relative;
-    animation: cube-loader 1.3s infinite ease-in-out;
+    width: 33%;
 
     &.cube-loader__cube--1 {
       animation-delay: 0.2s;

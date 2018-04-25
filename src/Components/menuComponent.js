@@ -1,7 +1,5 @@
 import React, {PureComponent} from "react";
 import { connect } from "react-redux";
-import TooltipContainer from "./TooltipContainer.js";
-import IconButton from "./IconButton.js";
 
 function mapStateToProps(state) {
   return {

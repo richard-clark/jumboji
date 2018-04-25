@@ -80,7 +80,7 @@ function updateStateFromPath(path) {
 
     match = option.match(/^is-(\d+)$/);
     if (match) {
-      config.imageSize = parseInt(match[1]);
+      config.imageSize = parseInt(match[1], 10);
       continue;
     }
 
@@ -92,7 +92,7 @@ function updateStateFromPath(path) {
 
     match = option.match(/^n-(\d{1,2})$/);
     if (match) {
-      config.variation = parseInt(match[1]);
+      config.variation = parseInt(match[1], 10);
       continue;
     }
   }

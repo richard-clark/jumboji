@@ -1,6 +1,6 @@
 {
-  "name": "jumboji-2",
-  "version": "0.1.0",
+  "name": "jumboji",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "classnames": "^2.2.5",
@@ -14,8 +14,7 @@
     "react-redux": "^5.0.7",
     "react-scripts": "1.1.4",
     "redux": "^4.0.0",
-    "redux-saga": "^0.16.0",
-    "redux-thunk": "^2.2.0"
+    "redux-saga": "^0.16.0"
   },
   "scripts": {
     "build-css": "node-sass-chokidar src/main.scss -o src/",

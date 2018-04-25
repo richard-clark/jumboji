@@ -1,6 +1,5 @@
 import React, { PureComponent } from "react";
 import { connect } from "react-redux";
-import Icon from "./Icon.js";
 
 function EmptyStateButton({ children, onClick }) {
   return (
@@ -59,7 +58,7 @@ class Search extends PureComponent {
     if (!results.hasData || results.totalResults === 0) {
       emptyState = (
         <EmptyStateButton onClick={() => onQueryUpdated("")}>
-          😞
+          <span role="img" aria-label="disappointed-emoji">😞</span>
         </EmptyStateButton>
       );
     }
