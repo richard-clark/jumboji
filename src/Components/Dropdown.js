@@ -35,7 +35,7 @@ export default class Dropdown extends PureComponent {
     };
     this.onMouseDown = e => {
       if (this.contentElement && !isAncestor(this.contentElement, e.target)) {
-        e.preventDefault();
+        e.stopImmediatePropagation();
         this.props.onClose();
       }
     };
