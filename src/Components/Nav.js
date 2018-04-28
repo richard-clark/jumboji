@@ -59,7 +59,7 @@ function renderMenu() {
 
 function Nav({
   palette,
-  initialLoading,
+  routerStateInitialized,
   downloadUrl,
   emoji,
   emojiToNameMap,
@@ -76,7 +76,7 @@ function Nav({
   const navClasses = classNames("main__nav", "nav", {
     "nav--fg-light": !navStyle.useDarkTheme,
     "nav--fg-dark": navStyle.useDarkTheme,
-    "nav--visible": !initialLoading
+    "nav--visible": routerStateInitialized
   });
 
   let download = "emoji";
@@ -137,7 +137,7 @@ function Nav({
 function mapStateToProps(state) {
   return {
     emoji: state.emoji,
-    initialLoading: state.initialLoading,
+    routerStateInitialized: state.routerStateInitialized,
     palette: state.palette,
     visibleDropdown: state.visibleDropdown,
     downloadUrl: state.downloadUrl,
